@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="@dimen/dp110"
+        android:layout_height="@dimen/dp88"
+        android:scaleType="centerCrop"
+        android:src="@drawable/status_default_nonetwork" />
+
+    <TextView
+        android:id="@+id/tvRetryHint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp36"
+        android:text="@string/load_error_refresh_please"
+        android:textColor="@color/gray_999999"
+        android:textSize="@dimen/sp16" />
+
+    <TextView
+        android:id="@+id/no_network_retry_view"
+        android:layout_width="@dimen/dp88"
+        android:layout_height="@dimen/dp32"
+        android:layout_marginTop="@dimen/dp24"
+        android:background="@drawable/shape_red_ff4620_stroke_radius32"
+        android:gravity="center"
+        android:text="@string/refresh"
+        android:textColor="@color/red_ff4620"
+        android:textSize="@dimen/sp15" />
+</LinearLayout>

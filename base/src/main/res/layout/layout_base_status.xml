@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.yxr.base.widget.status.MultipleStatusView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:emptyView="@layout/layout_default_empty"
+    app:loadingView="@layout/layout_default_loading"
+    app:noNetworkView="@layout/layout_default_no_network">
+
+</com.yxr.base.widget.status.MultipleStatusView>

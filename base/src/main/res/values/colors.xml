@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#8c0051</color>
+    <color name="colorPrimaryDark">#060050</color>
+    <color name="colorAccent">#185151</color>
+
+    <color name="default_green">#6fa8b8</color>
+    <color name="default_pink">#ecd6da</color>
+    <color name="default_purple">#b0cce5</color>
+    <color name="default_red">#e5a9a0</color>
+
+    <color name="white_ffffff">#ffffff</color>
+    <color name="white_f2f2f2">#f2f2f2</color>
+    <color name="white_75ffffff">#75ffffff</color>
+    <color name="white_4dffffff">#4dffffff</color>
+    <color name="white_65ffffff">#65ffffff</color>
+    <color name="white_b3ffffff">#b3ffffff</color>
+    <color name="white_f2ffffff">#f2ffffff</color>
+    <color name="white_cbffffff">#cbffffff</color>
+    <color name="white_33ffffff">#33ffffff</color>
+    <color name="white_efefef">#efefef</color>
+    <color name="white_eeeeee">#eeeeee</color>
+    <color name="white_f6f6f6">#f6f6f6</color>
+    <color name="black_000000">#000000</color>
+    <color name="black_75000000">#75000000</color>
+    <color name="black_80000000">#80000000</color>
+    <color name="black_85000000">#85000000</color>
+    <color name="black_50000000">#50000000</color>
+    <color name="black_333333">#333333</color>
+    <color name="black_292929">#292929</color>
+    <color name="red_ff4620">#ff4620</color>
+    <color name="red_fb2929">#fb2929</color>
+    <color name="pink_fff1ef">#fff1ef</color>
+    <color name="red_cc0000">#cc0000</color>
+    <color name="gray_595959">#595959</color>
+    <color name="gray_5c5c5c">#5c5c5c</color>
+    <color name="gray_f7f7f7">#f7f7f7</color>
+    <color name="gray_ebebeb">#ebebeb</color>
+    <color name="gray_dadada">#dadada</color>
+    <color name="gray_979797">#979797</color>
+    <color name="gray_999999">#999999</color>
+    <color name="gray_666666">#666666</color>
+    <color name="gray_a7a7a7">#a7a7a7</color>
+    <color name="gray_7a7a7a">#7a7a7a</color>
+    <color name="gray_aeaeae">#aeaeae</color>
+    <color name="gray_d4d4d4">#d4d4d4</color>
+    <color name="transparent">#00000000</color>
+    <color name="yellow_fda844">#fda844</color>
+    <color name="yellow_ffb95e">#ffb95e</color>
+    <color name="yellow_feb34d">#feb34d</color>
+    <color name="yellow_ff8844">#ff8844</color>
+    <color name="orange_ff783c">#ff783c</color>
+    <color name="blue_007aff">#007aff</color>
+</resources>
