@@ -41,5 +41,5 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui-ktx:2.4.1'
 
     implementation project(path: ':base')
-//    implementation 'com.github.yxr2222222:BasicDemo:v1.0.0.202212071'
+//    implementation 'com.github.yxr2222222:BasicDemo:v1.0.2.202212071'
 }
