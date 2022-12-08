@@ -34,14 +34,9 @@ android {
 
     afterEvaluate {
         publishing {
-            def versionName = "1.1.0.202212081"
             publications {
                 release(MavenPublication) {
                     from components.release
-
-                    groupId = "com.yxr"
-                    artifactId = "base"
-                    version = versionName
                 }
             }
         }
