@@ -36,9 +36,6 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.4.1'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.4.1'
-
     implementation project(path: ':base')
 //    implementation 'com.github.yxr2222222:BasicDemo:v1.0.3.202212071'
 }
