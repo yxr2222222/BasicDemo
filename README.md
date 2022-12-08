@@ -103,6 +103,30 @@
 
 ### 使用说明
 
+1. Module的gradle完善
+
+   ```java
+   apply plugin: 'kotlin-android'
+   apply plugin: 'kotlin-kapt'
+     
+   android {
+     	...
+     	 buildFeatures {
+           viewBinding true
+           dataBinding true
+       }
+     
+     	compileOptions {
+           sourceCompatibility JavaVersion.VERSION_1_8
+           targetCompatibility JavaVersion.VERSION_1_8
+       }
+       ...
+   }
+   
+   ```
+   
+   
+   
 1. BaseApplication
 
    使用该基础框架是须继承BaseApplication为基础
