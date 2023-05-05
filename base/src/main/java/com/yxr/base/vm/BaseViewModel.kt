@@ -56,8 +56,11 @@ abstract class BaseViewModel(lifecycle: LifecycleOwner) : AbsViewModel(lifecycle
     /**
      * 创建RetrofitService，通过Service获取对应api
      */
-    open fun <T : Any> createApi(cls: Class<T>, dispatcher: Dispatcher? = null): T =
-        HttpManager.get().createApi(cls, dispatcher)
+    open fun <T : Any> createApi(
+        cls: Class<T>,
+        dispatcher: Dispatcher? = null,
+        isJson: Boolean = true
+    ): T = HttpManager.get().createApi(cls, dispatcher, isJson)
 
     /**
      * 快捷请求

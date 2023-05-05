@@ -55,11 +55,15 @@ class HttpManager private constructor() {
         this.httpConfig = httpConfig
     }
 
-    fun <T : Any> createApi(cls: Class<T>, dispatcher: Dispatcher? = null): T {
+    fun <T : Any> createApi(
+        cls: Class<T>,
+        dispatcher: Dispatcher? = null,
+        isJson: Boolean = true
+    ): T {
         val apiKey = cls.name + dispatcher.hashCode()
         var api = apiClassMap[apiKey]
         if (api == null) {
-            api = getRetrofit(dispatcher).create(cls)
+            api = getRetrofit(dispatcher, isJson).create(cls)
             apiClassMap[apiKey] = api
         }
         return api as T
