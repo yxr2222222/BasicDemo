@@ -21,7 +21,7 @@
         android:textSize="@dimen/sp16" />
 
     <TextView
-        android:id="@+id/no_network_retry_view"
+        android:id="@+id/error_retry_view"
         android:layout_width="@dimen/dp88"
         android:layout_height="@dimen/dp32"
         android:layout_marginTop="@dimen/dp24"

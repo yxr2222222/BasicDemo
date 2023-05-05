@@ -32,7 +32,7 @@ interface IBaseStatusFun {
 
     fun showLoading(loadingText: String?)
 
-    fun showNetworkError(hintMessage: String?, retryText: String?)
+    fun showError(hintMessage: String?, retryText: String?)
 
     fun changUiStatus(uiStatus: UIStatus)
 }

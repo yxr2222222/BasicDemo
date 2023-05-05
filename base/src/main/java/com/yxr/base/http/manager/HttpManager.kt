@@ -11,6 +11,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 import java.util.concurrent.TimeUnit
 
 /**
@@ -41,7 +42,8 @@ class HttpManager private constructor() {
         }
     }
 
-    private val retrofitMap = HashMap<Dispatcher?, Retrofit>()
+    private val jsonRetrofitMap = HashMap<Int?, Retrofit>()
+    private val xmlRetrofitMap = HashMap<Int?, Retrofit>()
     private val apiClassMap = HashMap<String, Any>()
 
     /**
@@ -63,18 +65,18 @@ class HttpManager private constructor() {
         return api as T
     }
 
-    fun getRetrofit(dispatcher: Dispatcher? = null): Retrofit {
-        var retrofit = retrofitMap[dispatcher]
-        if (retrofit == null) {
-            retrofit = createRetrofit(dispatcher)
+    fun getRetrofit(dispatcher: Dispatcher? = null, isJson: Boolean = true): Retrofit {
+        return if (isJson) {
+            jsonRetrofitMap[dispatcher?.hashCode()] ?: createRetrofit(dispatcher, true)
+        } else {
+            xmlRetrofitMap[dispatcher?.hashCode()] ?: createRetrofit(dispatcher, false)
         }
-        return retrofit
     }
 
     /**
      * 创建Retrofit
      */
-    private fun createRetrofit(dispatcher: Dispatcher?): Retrofit {
+    private fun createRetrofit(dispatcher: Dispatcher?, isJson: Boolean): Retrofit {
         val builder = OkHttpClient().newBuilder().cache(httpConfig.cache)
 
         // 设置调度器
@@ -117,11 +119,24 @@ class HttpManager private constructor() {
         }
 
         val client: OkHttpClient = builder.build()
-        return Retrofit.Builder()
-            .client(client)
-            .baseUrl(httpConfig.baseUrl)
-            .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .build()
+        if (isJson) {
+            val retrofit = Retrofit.Builder()
+                .client(client)
+                .baseUrl(httpConfig.baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build()
+            jsonRetrofitMap[dispatcher?.hashCode()] = retrofit
+            return retrofit
+        } else {
+            val retrofit = Retrofit.Builder()
+                .client(client)
+                .baseUrl(httpConfig.baseUrl)
+                .addConverterFactory(SimpleXmlConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build()
+            xmlRetrofitMap[dispatcher?.hashCode()] = retrofit
+            return retrofit
+        }
     }
 }

@@ -28,16 +28,14 @@ public class MultipleStatusView extends RelativeLayout {
     private View mEmptyView;
     private View mErrorView;
     private View mLoadingView;
-    private View mNoNetworkView;
     private View mContentView;
     private int mEmptyViewResId;
     private int mErrorViewResId;
     private int mLoadingViewResId;
-    private int mNoNetworkViewResId;
-    private int mContentViewResId;
+    private final int mContentViewResId;
 
     private UIStatus mUiStatus;
-    private LayoutInflater mInflater;
+    private final LayoutInflater mInflater;
     private OnClickListener mOnRetryClickListener;
 
     private final ArrayList<UIStatus> statusTagList = new ArrayList<>();
@@ -57,9 +55,8 @@ public class MultipleStatusView extends RelativeLayout {
 
         final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.MultipleStatusView, defStyleAttr, 0);
         mEmptyViewResId = a.getResourceId(R.styleable.MultipleStatusView_emptyView, R.layout.layout_default_empty);
-        mErrorViewResId = a.getResourceId(R.styleable.MultipleStatusView_errorView, R.layout.layout_default_no_network);
+        mErrorViewResId = a.getResourceId(R.styleable.MultipleStatusView_errorView, R.layout.layout_default_error);
         mLoadingViewResId = a.getResourceId(R.styleable.MultipleStatusView_loadingView, R.layout.layout_default_loading);
-        mNoNetworkViewResId = a.getResourceId(R.styleable.MultipleStatusView_noNetworkView, R.layout.layout_default_no_network);
         mContentViewResId = a.getResourceId(R.styleable.MultipleStatusView_contentView, NULL_RESOURCE_ID);
 
         a.recycle();
@@ -76,7 +73,7 @@ public class MultipleStatusView extends RelativeLayout {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         try {
-            clear(mEmptyView, mLoadingView, mErrorView, mNoNetworkView);
+            clear(mEmptyView, mLoadingView, mErrorView);
             statusTagList.clear();
             mOnRetryClickListener = null;
         } catch (Exception e){
@@ -148,9 +145,6 @@ public class MultipleStatusView extends RelativeLayout {
                 break;
             case EMPTY:
                 showEmpty();
-                break;
-            case NETWORK_ERROR:
-                showNoNetwork();
                 break;
             case ERROR:
                 showError();
@@ -270,45 +264,6 @@ public class MultipleStatusView extends RelativeLayout {
             mLoadingView.setTag(mUiStatus);
             statusTagList.add(mUiStatus);
             addView(mLoadingView, 0, layoutParams);
-        }
-        showViewByTag(mUiStatus);
-    }
-
-    /**
-     * 显示无网络视图
-     */
-    public final void showNoNetwork() {
-        showNoNetwork(mNoNetworkViewResId, DEFAULT_LAYOUT_PARAMS);
-    }
-
-    /**
-     * 显示无网络视图
-     *
-     * @param layoutId     自定义布局文件
-     * @param layoutParams 布局参数
-     */
-    public final void showNoNetwork(int layoutId, ViewGroup.LayoutParams layoutParams) {
-        showNoNetwork(inflateView(layoutId), layoutParams);
-    }
-
-    /**
-     * 显示无网络视图
-     *
-     * @param view         自定义视图
-     * @param layoutParams 布局参数
-     */
-    public final void showNoNetwork(View view, ViewGroup.LayoutParams layoutParams) {
-        checkNull(view, "No network view is null!");
-        mUiStatus = UIStatus.NETWORK_ERROR;
-        if (null == mNoNetworkView) {
-            mNoNetworkView = view;
-            mNoNetworkView.setTag(mUiStatus);
-            View noNetworkRetryView = mNoNetworkView.findViewById(R.id.no_network_retry_view);
-            if (null != mOnRetryClickListener && null != noNetworkRetryView) {
-                noNetworkRetryView.setOnClickListener(mOnRetryClickListener);
-            }
-            statusTagList.add(mUiStatus);
-            addView(mNoNetworkView, 0, layoutParams);
         }
         showViewByTag(mUiStatus);
     }

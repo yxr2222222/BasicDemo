@@ -20,10 +20,6 @@ public enum UIStatus {
      */
     EMPTY,
     /**
-     * 网络异常状态
-     */
-    NETWORK_ERROR,
-    /**
      * 发生错误状态
      */
     ERROR

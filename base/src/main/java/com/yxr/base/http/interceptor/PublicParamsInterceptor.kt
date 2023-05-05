@@ -10,7 +10,9 @@ class PublicParamsInterceptor : Interceptor {
         val builder = request.newBuilder()
         // 添加公共头
         HttpManager.get().httpConfig.configCallback?.getPublicHeaders()?.forEach { header ->
-            builder.addHeader(header.key, header.value)
+            if (header.key.isNotBlank() && header.value.isNotBlank()) {
+                builder.header(header.key, header.value)
+            }
         }
         return chain.proceed(builder.build())
     }

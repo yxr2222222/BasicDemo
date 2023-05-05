@@ -83,8 +83,8 @@ abstract class BaseStatusActivity<T : ViewDataBinding, VM : BaseStatusViewModel>
         statusViewHelper.showLoading(loadingText)
     }
 
-    override fun showNetworkError(hintMessage: String?, retryText: String?) {
-        statusViewHelper.showNetworkError(hintMessage, retryText)
+    override fun showError(hintMessage: String?, retryText: String?) {
+        statusViewHelper.showError(hintMessage, retryText)
     }
 
     override fun changUiStatus(uiStatus: UIStatus) {

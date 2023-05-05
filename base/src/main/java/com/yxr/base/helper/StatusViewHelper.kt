@@ -12,7 +12,7 @@ import com.yxr.base.widget.TitleBar
 import com.yxr.base.widget.status.MultipleStatusView
 import com.yxr.base.widget.status.UIStatus
 
-open class StatusViewHelper(val statusView: MultipleStatusView) : IBaseStatusFun {
+open class StatusViewHelper(private val statusView: MultipleStatusView) : IBaseStatusFun {
     private var animLoadingView: DefaultAnimLoadingView? = null
     private var tvRetryHint: TextView? = null
     private var tvRetry: TextView? = null
@@ -54,8 +54,8 @@ open class StatusViewHelper(val statusView: MultipleStatusView) : IBaseStatusFun
         animLoadingView?.setLoadingText(loadingText)
     }
 
-    override fun showNetworkError(hintMessage: String?, retryText: String?) {
-        changUiStatus(UIStatus.NETWORK_ERROR)
+    override fun showError(hintMessage: String?, retryText: String?) {
+        changUiStatus(UIStatus.ERROR)
         if (tvRetryHint == null) {
             tvRetryHint = statusView.findViewById(R.id.tvRetryHint)
         }
@@ -63,7 +63,7 @@ open class StatusViewHelper(val statusView: MultipleStatusView) : IBaseStatusFun
             if (TextUtils.isEmpty(hintMessage)) statusView.context.getString(R.string.load_error_refresh_please) else hintMessage
         if (retryText != null) {
             if (tvRetry == null) {
-                tvRetry = statusView.findViewById(R.id.no_network_retry_view)
+                tvRetry = statusView.findViewById(R.id.error_retry_view)
             }
             tvRetry?.text = retryText
         }
@@ -83,8 +83,6 @@ open class StatusViewHelper(val statusView: MultipleStatusView) : IBaseStatusFun
                 showLoading(status.message)
             } else if (UIStatus.CONTENT == uiStatus) {
                 changUiStatus(UIStatus.LOADING)
-            } else if (UIStatus.NETWORK_ERROR == uiStatus) {
-                showNetworkError(status.message, status.retryText)
             } else if (UIStatus.EMPTY == uiStatus) {
                 changUiStatus(UIStatus.EMPTY)
             } else if (UIStatus.ERROR == uiStatus) {
