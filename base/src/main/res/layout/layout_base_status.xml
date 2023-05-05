@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:emptyView="@layout/layout_default_empty"
-    app:loadingView="@layout/layout_default_loading"
-    app:noNetworkView="@layout/layout_default_no_network">
+    app:loadingView="@layout/layout_default_loading">
 
 </com.yxr.base.widget.status.MultipleStatusView>
