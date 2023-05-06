@@ -82,7 +82,7 @@ open class StatusViewHelper(private val statusView: MultipleStatusView) : IBaseS
             if (UIStatus.LOADING == uiStatus) {
                 showLoading(status.message)
             } else if (UIStatus.CONTENT == uiStatus) {
-                changUiStatus(UIStatus.LOADING)
+                changUiStatus(UIStatus.CONTENT)
             } else if (UIStatus.EMPTY == uiStatus) {
                 changUiStatus(UIStatus.EMPTY)
             } else if (UIStatus.ERROR == uiStatus) {

@@ -1,6 +1,6 @@
 package com.yxr.base.http.model
 
-interface IResponse {
+interface IResponse<T> {
     /**
      * 是否成功
      */
@@ -10,4 +10,6 @@ interface IResponse {
      * 错误信息
      */
     fun error(): String?
+
+    fun getData(): T?
 }

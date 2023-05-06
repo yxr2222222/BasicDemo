@@ -71,9 +71,9 @@ abstract class BaseViewModel(lifecycle: LifecycleOwner) : AbsViewModel(lifecycle
      * @param isShowError 是否在失败时自动展示toast简要信息
      * @param isShowErrorDetail 失败时toast的是否为详细信息
      */
-    open fun <E : IResponse> launchRequest(
-        block: suspend () -> E?,
-        onSuccess: (E?) -> Unit,
+    open fun <T> launchRequest(
+        block: suspend () -> IResponse<T>?,
+        onSuccess: (T?) -> Unit,
         onError: suspend (exception: NetworkException) -> Unit = {},
         isNeedLoading: Boolean = true,
         isShowError: Boolean = false,
@@ -102,7 +102,7 @@ abstract class BaseViewModel(lifecycle: LifecycleOwner) : AbsViewModel(lifecycle
                     )
                 )
             } else {
-                onSuccess(data)
+                onSuccess(data.getData())
             }
         }, onError = { exception ->
             if (isNeedLoading) {
