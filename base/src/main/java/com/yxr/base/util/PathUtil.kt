@@ -50,13 +50,16 @@ class PathUtil {
                 } else if (isMediaDocument(uri)) {
                     val docId = DocumentsContract.getDocumentId(uri)
                     val split = docId.split(":").toTypedArray()
-                    val type = split[0]
-                    if ("image" == type) {
-                        uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                    } else if ("video" == type) {
-                        uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-                    } else if ("audio" == type) {
-                        uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                    when (split[0]) {
+                        "image" -> {
+                            uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                        }
+                        "video" -> {
+                            uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+                        }
+                        "audio" -> {
+                            uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                        }
                     }
                     selection = "_id=?"
                     selectionArgs = arrayOf(

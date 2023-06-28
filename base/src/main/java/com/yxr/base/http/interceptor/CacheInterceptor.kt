@@ -20,7 +20,7 @@ class CacheInterceptor : Interceptor {
             )
             return chain.proceed(request)
         } else {
-            val isNetworkConnected = BaseApplication.context?.isNetworkConnected() == true
+            val isNetworkConnected = BaseApplication.context.isNetworkConnected()
 
             if (!isNetworkConnected) {
                 request = request.newBuilder().cacheControl(CacheControl.FORCE_CACHE).build()

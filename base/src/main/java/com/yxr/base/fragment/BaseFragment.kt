@@ -67,9 +67,7 @@ abstract class BaseFragment<T : ViewDataBinding, VM : BaseViewModel> :
     }
 
     protected open fun toast(message: String?) {
-        activity?.let {
-            ToastUtil.show(it, message)
-        }
+        ToastUtil.show(message)
     }
 
     /**

@@ -20,6 +20,7 @@ abstract class BaseDialogFragment<T : ViewDataBinding, VM : BaseViewModel> : Dia
 
     protected lateinit var binding: T
     protected open lateinit var rootView: View
+    var onDismissListener: OnDismissListener? = null
 
     /**
      * 数据是否加载过了，用于数据懒加载
@@ -67,9 +68,7 @@ abstract class BaseDialogFragment<T : ViewDataBinding, VM : BaseViewModel> : Dia
     }
 
     protected open fun toast(message: String?) {
-        activity?.let {
-            ToastUtil.show(it, message)
-        }
+        ToastUtil.show(message)
     }
 
     /**
@@ -140,5 +139,14 @@ abstract class BaseDialogFragment<T : ViewDataBinding, VM : BaseViewModel> : Dia
      */
     protected open fun createLoadingDialog(): Dialog? {
         return if (activity == null) null else DefaultLoadingDialog(activity)
+    }
+
+    override fun dismiss() {
+        super.dismiss()
+        onDismissListener?.onDismiss()
+    }
+
+    interface OnDismissListener {
+        fun onDismiss()
     }
 }

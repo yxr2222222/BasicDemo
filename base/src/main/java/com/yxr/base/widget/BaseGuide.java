@@ -1,4 +1,4 @@
-package com.yxr.base;
+package com.yxr.base.widget;
 
 import android.app.Activity;
 import android.util.Log;
@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.yxr.base.R;
 import com.yxr.base.widget.guide.Component;
 import com.yxr.base.widget.guide.GuideBuilder;
 

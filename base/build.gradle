@@ -10,7 +10,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 31
         versionCode 1
-        versionName "2.5.2"
+        versionName "2.6.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -89,4 +89,7 @@ dependencies {
 
     // event
     api 'io.github.jeremyliao:live-event-bus-x:1.8.0'
+
+    // mmkv
+    api 'com.tencent:mmkv:1.2.11'
 }

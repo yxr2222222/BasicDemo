@@ -89,7 +89,7 @@ abstract class BaseActivity<T : ViewDataBinding, VM : BaseViewModel> : AppCompat
     }
 
     override fun toast(message: String?) {
-        ToastUtil.show(applicationContext, message)
+        ToastUtil.show(message)
     }
 
     /**

@@ -95,9 +95,12 @@ open class AbsViewModel(val lifecycle: LifecycleOwner) : ViewModel(), DefaultLif
                                 break
                             }
                         }
-                        val permissionReq = permissionReqOb.value
-                        if (isGranted && permissionReq != null) {
-                            permissionReq.onPermissionGranted()
+                        permissionReqOb.value?.let { permissionReq ->
+                            if (isGranted) {
+                                permissionReq.onPermissionGranted()
+                            } else {
+                                permissionReq.onPermissionDenied()
+                            }
                         }
                     }
                 }
