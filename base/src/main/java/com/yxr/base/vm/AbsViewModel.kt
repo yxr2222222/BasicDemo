@@ -148,7 +148,7 @@ open class AbsViewModel(val lifecycle: LifecycleOwner) : ViewModel(), DefaultLif
     ) {
         val context = getContext()
         if (context is Activity) {
-            CancelConfirmDialog(context)
+            val cancelConfirmDialog = CancelConfirmDialog(context)
                 .setCancelText(context.getString(R.string.disagree))
                 .setConfirmText(context.getString(R.string.agree))
                 .setContent(permissionReq.desc)
@@ -157,7 +157,14 @@ open class AbsViewModel(val lifecycle: LifecycleOwner) : ViewModel(), DefaultLif
                     override fun onConfirm() {
                         permissionLauncher?.launch(needRequestPermission.toTypedArray())
                     }
-                }).show()
+
+                    override fun onCancel() {
+                        permissionReq.onPermissionDenied()
+                    }
+                })
+            cancelConfirmDialog.setCancelable(false)
+            cancelConfirmDialog.setCanceledOnTouchOutside(false)
+            cancelConfirmDialog.show()
         }
     }
 }
