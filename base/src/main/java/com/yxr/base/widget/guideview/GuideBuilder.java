@@ -1,4 +1,4 @@
-package com.yxr.base.widget.guide;
+package com.yxr.base.widget.guideview;
 
 import android.view.View;
 
@@ -52,7 +52,6 @@ public class GuideBuilder {
     private List<Component> mComponents = new ArrayList<Component>();
     private OnVisibilityChangedListener mOnVisibilityChangedListener;
     private OnSlideListener mOnSlideListener;
-    private OnTargetClickListener onTargetClickListener;
 
     /**
      * 构造函数
@@ -173,6 +172,50 @@ public class GuideBuilder {
     }
 
     /**
+     * 是否可以执行返回事件
+     */
+    public GuideBuilder setCanBackPress(boolean b) {
+        if (mBuilt) {
+            throw new BuildException("Already created, rebuild a new one.");
+        }
+        mConfiguration.mIsCanBackPress = b;
+        return this;
+    }
+
+    /**
+     * 高亮区域是否可以执行点击事件
+     */
+    public GuideBuilder setHighLightRectClickable(boolean b) {
+        if (mBuilt) {
+            throw new BuildException("Already created, rebuild a new one.");
+        }
+        mConfiguration.mHighLightRectClickable = b;
+        return this;
+    }
+
+    /**
+     * 高亮区域是否可以执行点击事件
+     */
+    public GuideBuilder setHighLightRectClickListener(View.OnClickListener b) {
+        if (mBuilt) {
+            throw new BuildException("Already created, rebuild a new one.");
+        }
+        mConfiguration.mHighLightRectClickListener = b;
+        return this;
+    }
+
+    /**
+     * 高亮区域点击是否自动隐藏蒙板
+     */
+    public GuideBuilder setHighLightRectClickAutoDismiss(boolean b) {
+        if (mBuilt) {
+            throw new BuildException("Already created, rebuild a new one.");
+        }
+        mConfiguration.mHighLightRectClickAutoDismiss = b;
+        return this;
+    }
+
+    /**
      * 设置进入动画
      *
      * @param id 进入动画的id
@@ -223,18 +266,6 @@ public class GuideBuilder {
             throw new BuildException("Already created, rebuild a new one.");
         }
         mOnVisibilityChangedListener = onVisibilityChangedListener;
-        return this;
-    }
-
-    /**
-     * 设置遮罩可见状态变化时的监听回调
-     */
-    public GuideBuilder setOnTargetClickListener(
-            OnTargetClickListener onTargetClickListener) {
-        if (mBuilt) {
-            throw new BuildException("Already created, rebuild a new one.");
-        }
-        this.onTargetClickListener = onTargetClickListener;
         return this;
     }
 
@@ -347,7 +378,6 @@ public class GuideBuilder {
         guide.setConfiguration(mConfiguration);
         guide.setCallback(mOnVisibilityChangedListener);
         guide.setOnSlideListener(mOnSlideListener);
-        guide.setOnTargetClickListener(onTargetClickListener);
         mComponents = null;
         mConfiguration = null;
         mOnVisibilityChangedListener = null;
@@ -358,7 +388,7 @@ public class GuideBuilder {
     /**
      * 手势滑动监听
      */
-    public static interface OnSlideListener {
+    public interface OnSlideListener {
 
         void onSlideListener(SlideState state);
     }
@@ -366,14 +396,10 @@ public class GuideBuilder {
     /**
      * 遮罩可见发生变化时的事件监听
      */
-    public static interface OnVisibilityChangedListener {
+    public interface OnVisibilityChangedListener {
 
         void onShown();
 
         void onDismiss();
-    }
-
-    public interface OnTargetClickListener {
-        void onTargetClicked();
     }
 }

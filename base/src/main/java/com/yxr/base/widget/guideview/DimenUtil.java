@@ -1,4 +1,4 @@
-package com.yxr.base.widget.guide;
+package com.yxr.base.widget.guideview;
 
 import android.content.Context;
 

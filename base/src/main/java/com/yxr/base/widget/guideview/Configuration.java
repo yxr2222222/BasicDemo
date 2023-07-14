@@ -1,4 +1,4 @@
-package com.yxr.base.widget.guide;
+package com.yxr.base.widget.guideview;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -84,7 +84,22 @@ class Configuration implements Parcelable {
    */
   boolean mOverlayTarget = false;
 
-  boolean mShowCloseButton = false;
+  /**
+   * 是否可以支持返回键事件
+   */
+  boolean mIsCanBackPress = true;
+  /**
+   * 高亮控件区域是否可以点击（会结合mOverlayTarget，mOverlayTarget为true的话也不会执行点击）
+   */
+  boolean mHighLightRectClickable = true;
+  /**
+   * 自定义高亮区域点击事件
+   */
+  View.OnClickListener mHighLightRectClickListener = null;
+  /**
+   * 高亮控件区域点击之后是否自动隐藏蒙板
+   */
+  boolean mHighLightRectClickAutoDismiss = true;
 
   int mEnterAnimationId = -1;
 

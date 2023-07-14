@@ -1,4 +1,4 @@
-package com.yxr.base.widget.guide;
+package com.yxr.base.widget.guideview;
 
 /**
  * 遮罩系统运行异常的封装

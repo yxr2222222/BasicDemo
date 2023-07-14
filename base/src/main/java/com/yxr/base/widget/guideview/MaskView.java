@@ -1,4 +1,4 @@
-package com.yxr.base.widget.guide;
+package com.yxr.base.widget.guideview;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -11,6 +11,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -64,6 +65,7 @@ class MaskView extends ViewGroup {
      * 橡皮擦Bitmap
      */
     private Bitmap mEraserBitmap;
+    private Bitmap mTargetBitmap;
     /**
      * 橡皮擦Cavas
      */
@@ -74,6 +76,7 @@ class MaskView extends ViewGroup {
     private int mInitHeight;
     private int mChangedHeight = 0;
     private boolean mFirstFlag = true;
+    private View mTargetView;
 
     public MaskView(Context context) {
         this(context, null, 0);
@@ -112,6 +115,7 @@ class MaskView extends ViewGroup {
             clearFocus();
             mEraserCanvas.setBitmap(null);
             mEraserBitmap = null;
+            mTargetBitmap = null;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -162,34 +166,32 @@ class MaskView extends ViewGroup {
                 continue;
             }
             switch (lp.targetAnchor) {
-                case LayoutParams.ANCHOR_LEFT:
+                case LayoutParams.ANCHOR_LEFT://左
                     mChildTmpRect.right = mTargetRect.left;
                     mChildTmpRect.left = mChildTmpRect.right - child.getMeasuredWidth();
                     verticalChildPositionLayout(child, mChildTmpRect, lp.targetParentPosition);
                     break;
-                case LayoutParams.ANCHOR_TOP:
+                case LayoutParams.ANCHOR_TOP://上
                     mChildTmpRect.bottom = mTargetRect.top;
                     mChildTmpRect.top = mChildTmpRect.bottom - child.getMeasuredHeight();
                     horizontalChildPositionLayout(child, mChildTmpRect, lp.targetParentPosition);
                     break;
-                case LayoutParams.ANCHOR_RIGHT:
+                case LayoutParams.ANCHOR_RIGHT://右
                     mChildTmpRect.left = mTargetRect.right;
                     mChildTmpRect.right = mChildTmpRect.left + child.getMeasuredWidth();
                     verticalChildPositionLayout(child, mChildTmpRect, lp.targetParentPosition);
                     break;
-                case LayoutParams.ANCHOR_BOTTOM:
+                case LayoutParams.ANCHOR_BOTTOM://下
                     mChildTmpRect.top = mTargetRect.bottom;
                     mChildTmpRect.bottom = mChildTmpRect.top + child.getMeasuredHeight();
                     horizontalChildPositionLayout(child, mChildTmpRect, lp.targetParentPosition);
                     break;
-                case LayoutParams.ANCHOR_OVER:
+                case LayoutParams.ANCHOR_OVER://中心
                     mChildTmpRect.left = ((int) mTargetRect.width() - child.getMeasuredWidth()) >> 1;
                     mChildTmpRect.top = ((int) mTargetRect.height() - child.getMeasuredHeight()) >> 1;
                     mChildTmpRect.right = ((int) mTargetRect.width() + child.getMeasuredWidth()) >> 1;
                     mChildTmpRect.bottom = ((int) mTargetRect.height() + child.getMeasuredHeight()) >> 1;
                     mChildTmpRect.offset(mTargetRect.left, mTargetRect.top);
-                    break;
-                default:
                     break;
             }
             //额外的xy偏移
@@ -214,8 +216,6 @@ class MaskView extends ViewGroup {
             case LayoutParams.PARENT_END:
                 rect.right = mTargetRect.right;
                 rect.left = rect.right - child.getMeasuredWidth();
-                break;
-            default:
                 break;
         }
     }
@@ -289,36 +289,60 @@ class MaskView extends ViewGroup {
                 child = getChildAt(i);
                 drawChild(canvas, child, drawingTime);
             }
-        } catch (NullPointerException e) {
-
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (mChangedHeight != 0) {
-            mTargetRect.offset(0, mChangedHeight);
-            mInitHeight = mInitHeight + mChangedHeight;
-            mChangedHeight = 0;
-        }
-        mEraserBitmap.eraseColor(Color.TRANSPARENT);
-        mEraserCanvas.drawColor(mFullingPaint.getColor());
-        if (!mOverlayTarget) {
-            switch (mStyle) {
-                case Component.ROUNDRECT:
-                    mEraserCanvas.drawRoundRect(mTargetRect, mCorner, mCorner, mEraser);
-                    break;
-                case Component.CIRCLE:
-                    mEraserCanvas.drawCircle(mTargetRect.centerX(), mTargetRect.centerY(),
-                            mTargetRect.width() / 2, mEraser);
-                    break;
-                default:
-                    mEraserCanvas.drawRoundRect(mTargetRect, mCorner, mCorner, mEraser);
-                    break;
+        try {
+            if (mChangedHeight != 0) {
+                mTargetRect.offset(0, mChangedHeight);
+                mInitHeight = mInitHeight + mChangedHeight;
+                mChangedHeight = 0;
             }
+            mEraserBitmap.eraseColor(Color.TRANSPARENT);
+            mEraserCanvas.drawColor(mFullingPaint.getColor());
+            if (!mOverlayTarget) {
+                switch (mStyle) {
+                    case Component.CIRCLE:
+                        mEraserCanvas.drawCircle(mTargetRect.centerX(), mTargetRect.centerY(),
+                                mTargetRect.width() / 2, mEraser);
+                        break;
+                    case Component.TARGET:
+                        if (mTargetBitmap == null || mTargetBitmap.isRecycled()) {
+                            mTargetBitmap = createViewBitmap(mTargetView);
+                        }
+                        if (mTargetRect != null && mTargetBitmap != null) {
+                            float left = 0;
+                            if (mPaddingLeft <= 0) {
+                                left = mTargetRect.left + mPadding;
+                            } else {
+                                left = mTargetRect.left + mPaddingLeft;
+                            }
+
+                            float top = 0;
+                            if (mPaddingTop <= 0) {
+                                top = mTargetRect.top + mPadding;
+                            } else {
+                                top = mTargetRect.top + mPaddingTop;
+                            }
+
+                            Log.d("MaskView", "left: " + left + ", top: " + top);
+                            mEraserCanvas.drawBitmap(mTargetBitmap, left, top, null);
+                        }
+                        break;
+                    default:
+                        mEraserCanvas.drawRoundRect(mTargetRect, mCorner, mCorner, mEraser);
+                        break;
+                }
+            }
+            canvas.drawBitmap(mEraserBitmap, mOverlayRect.left, mOverlayRect.top, null);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        canvas.drawBitmap(mEraserBitmap, mOverlayRect.left, mOverlayRect.top, null);
     }
 
     public void setTargetRect(Rect rect) {
@@ -367,6 +391,21 @@ class MaskView extends ViewGroup {
 
     public void setPaddingBottom(int paddingBottom) {
         this.mPaddingBottom = paddingBottom;
+    }
+
+    public void setTargetView(View mTargetView) {
+        this.mTargetView = mTargetView;
+    }
+
+
+    public Bitmap createViewBitmap(View v) {
+        if (v == null) {
+            return null;
+        }
+        Bitmap bitmap = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        v.draw(canvas);
+        return bitmap;
     }
 
     static class LayoutParams extends ViewGroup.LayoutParams {

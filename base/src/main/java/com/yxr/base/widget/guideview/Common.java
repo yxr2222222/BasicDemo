@@ -1,4 +1,4 @@
-package com.yxr.base.widget.guide;
+package com.yxr.base.widget.guideview;
 
 import android.graphics.Rect;
 import android.view.LayoutInflater;
@@ -15,7 +15,7 @@ class Common {
    */
   static View componentToView(LayoutInflater inflater, Component c) {
     View view = c.getView(inflater);
-    final MaskView.LayoutParams lp = new MaskView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+    final MaskView.LayoutParams lp = new MaskView.LayoutParams(c.getComponentWidth(),
         ViewGroup.LayoutParams.WRAP_CONTENT);
     lp.offsetX = c.getXOffset();
     lp.offsetY = c.getYOffset();

@@ -1,28 +1,25 @@
-package com.yxr.base.widget.guide;
+package com.yxr.base.widget.guideview;
 
-import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.RectF;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.fragment.app.FragmentActivity;
+
 /**
  * 遮罩系统的封装 <br>
  * * 外部需要调用{@link GuideBuilder}来创建该实例，实例创建后调用
- * * {@link #show(Activity)} 控制显示； 调用 {@link #dismiss()}让遮罩系统消失。 <br>
  * <p>
  * Created by binIoter
  */
 
-public class Guide implements View.OnKeyListener, View.OnTouchListener {
-
-    Guide() {
-    }
-
+public class Guide implements View.OnTouchListener {
     /**
      * 滑动临界值
      */
@@ -30,11 +27,19 @@ public class Guide implements View.OnKeyListener, View.OnTouchListener {
     private Configuration mConfiguration;
     private MaskView mMaskView;
     private Component[] mComponents;
-    // 根据locInwindow定位后，是否需要判断loc值非0
-    private boolean mShouldCheckLocInWindow = true;
     private GuideBuilder.OnVisibilityChangedListener mOnVisibilityChangedListener;
-    private GuideBuilder.OnTargetClickListener onTargetClickListener;
     private GuideBuilder.OnSlideListener mOnSlideListener;
+    private final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
+        @Override
+        public void handleOnBackPressed() {
+            if (mConfiguration != null && mConfiguration.mAutoDismiss) {
+                dismiss();
+            }
+        }
+    };
+
+    Guide() {
+    }
 
     void setConfiguration(Configuration configuration) {
         mConfiguration = configuration;
@@ -57,7 +62,7 @@ public class Guide implements View.OnKeyListener, View.OnTouchListener {
      *
      * @param activity 目标Activity
      */
-    public void show(Activity activity) {
+    public void show(FragmentActivity activity) {
         show(activity, null);
     }
 
@@ -67,7 +72,7 @@ public class Guide implements View.OnKeyListener, View.OnTouchListener {
      * @param activity 目标Activity
      * @param overlay  遮罩层view
      */
-    public void show(Activity activity, ViewGroup overlay) {
+    public void show(FragmentActivity activity, ViewGroup overlay) {
         mMaskView = onCreateView(activity, overlay);
         if (overlay == null) {
             overlay = (ViewGroup) activity.getWindow().getDecorView();
@@ -164,14 +169,8 @@ public class Guide implements View.OnKeyListener, View.OnTouchListener {
         }
     }
 
-    /**
-     * 根据locInwindow定位后，是否需要判断loc值非0
-     */
-    public void setShouldCheckLocInWindow(boolean set) {
-        mShouldCheckLocInWindow = set;
-    }
-
-    private MaskView onCreateView(Activity activity, ViewGroup overlay) {
+    @SuppressLint("ClickableViewAccessibility")
+    private MaskView onCreateView(FragmentActivity activity, ViewGroup overlay) {
         if (overlay == null) {
             overlay = (ViewGroup) activity.getWindow().getDecorView();
         }
@@ -186,7 +185,8 @@ public class Guide implements View.OnKeyListener, View.OnTouchListener {
         maskView.setPaddingBottom(mConfiguration.mPaddingBottom);
         maskView.setHighTargetGraphStyle(mConfiguration.mGraphStyle);
         maskView.setOverlayTarget(mConfiguration.mOverlayTarget);
-        maskView.setOnKeyListener(this);
+
+        activity.getOnBackPressedDispatcher().addCallback(activity, onBackPressedCallback);
 
         // For removing the height of status bar we need the root content view's
         // location on screen
@@ -200,16 +200,22 @@ public class Guide implements View.OnKeyListener, View.OnTouchListener {
         }
 
         if (mConfiguration.mTargetView != null) {
+            maskView.setTargetView(mConfiguration.mTargetView);
             maskView.setTargetRect(Common.getViewAbsRect(mConfiguration.mTargetView, parentX, parentY));
         } else {
             // Gets the target view's abs rect
             View target = activity.findViewById(mConfiguration.mTargetViewId);
             if (target != null) {
+                maskView.setTargetView(target);
                 maskView.setTargetRect(Common.getViewAbsRect(target, parentX, parentY));
             }
         }
 
-        maskView.setOnTouchListener(this);
+        if (mConfiguration.mOutsideTouchable) {
+            maskView.setClickable(false);
+        } else {
+            maskView.setOnTouchListener(this);
+        }
 
         // Adds the components to the mask view.
         for (Component c : mComponents) {
@@ -223,64 +229,73 @@ public class Guide implements View.OnKeyListener, View.OnTouchListener {
         mConfiguration = null;
         mComponents = null;
         mOnVisibilityChangedListener = null;
-        onTargetClickListener = null;
         mOnSlideListener = null;
         mMaskView.removeAllViews();
         mMaskView = null;
-    }
-
-    @Override
-    public boolean onKey(View v, int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
-            if (mConfiguration != null && mConfiguration.mAutoDismiss) {
-                dismiss();
-                return true;
-            } else {
-                return false;
-            }
-        }
-        return false;
+        onBackPressedCallback.remove();
     }
 
     float startY = -1f;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
-        if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-            startY = motionEvent.getY();
-        } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-            if (startY - motionEvent.getY() > DimenUtil.dp2px(view.getContext(), SLIDE_THRESHOLD)) {
-                if (mOnSlideListener != null) {
-                    mOnSlideListener.onSlideListener(GuideBuilder.SlideState.UP);
-                }
-            } else if (motionEvent.getY() - startY > DimenUtil.dp2px(view.getContext(), SLIDE_THRESHOLD)) {
-                if (mOnSlideListener != null) {
-                    mOnSlideListener.onSlideListener(GuideBuilder.SlideState.DOWN);
-                }
-            }
-
-            if (mConfiguration != null) {
-                if (mConfiguration.mOutsideTouchable) {
-                    dismiss();
-                } else if (mMaskView != null) {
-                    RectF targetRect = mMaskView.getTargetRect();
-                    if (targetRect != null
-                            && motionEvent.getX() > targetRect.left
-                            && motionEvent.getX() < targetRect.right
-                            && motionEvent.getY() > targetRect.top
-                            && motionEvent.getY() < targetRect.bottom) {
-                        if (onTargetClickListener != null) {
-                            onTargetClickListener.onTargetClicked();
-                        }
-                        dismiss();
+        try {
+            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                startY = motionEvent.getY();
+            } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                if (startY - motionEvent.getY() > DimenUtil.dp2px(view.getContext(), SLIDE_THRESHOLD)) {
+                    if (mOnSlideListener != null) {
+                        mOnSlideListener.onSlideListener(GuideBuilder.SlideState.UP);
+                    }
+                } else if (motionEvent.getY() - startY > DimenUtil.dp2px(view.getContext(), SLIDE_THRESHOLD)) {
+                    if (mOnSlideListener != null) {
+                        mOnSlideListener.onSlideListener(GuideBuilder.SlideState.DOWN);
                     }
                 }
+                if (mMaskView != null
+                        && mConfiguration != null
+                        && !mConfiguration.mOverlayTarget
+                        && mConfiguration.mHighLightRectClickable
+                        && mConfiguration.mTargetView != null) {
+                    RectF targetRect = mMaskView.getTargetRect();
+                    if (targetRect != null) {
+                        float rawX = motionEvent.getRawX();
+                        float rawY = motionEvent.getRawY();
+                        if (rawX > targetRect.left
+                                && rawX < targetRect.right
+                                && rawY > targetRect.top
+                                && rawY < targetRect.bottom) {
+                            if (mConfiguration.mHighLightRectClickListener != null) {
+                                mConfiguration.mHighLightRectClickListener.onClick(mConfiguration.mTargetView);
+                            } else {
+                                int[] outLocation = new int[2];
+                                mConfiguration.mTargetView.getLocationOnScreen(outLocation);
+                                int x = (int) (motionEvent.getRawX() - outLocation[0]);
+                                int y = (int) (motionEvent.getRawY() - outLocation[1]);
+                                long currentTimeMillis = System.currentTimeMillis();
+                                MotionEvent downMotionEvent = MotionEvent.obtain(currentTimeMillis, currentTimeMillis, MotionEvent.ACTION_DOWN, x, y, 0);
+                                MotionEvent upMotionEvent = MotionEvent.obtain(currentTimeMillis, currentTimeMillis, MotionEvent.ACTION_UP, x, y, 0);
+
+                                mConfiguration.mTargetView.dispatchTouchEvent(downMotionEvent);
+                                mConfiguration.mTargetView.dispatchTouchEvent(upMotionEvent);
+
+                                downMotionEvent.recycle();
+                                upMotionEvent.recycle();
+                            }
+                            if (mConfiguration.mHighLightRectClickAutoDismiss) {
+                                dismiss();
+                            }
+                        }
+                    }
+                }
+                if (mConfiguration != null && mConfiguration.mAutoDismiss) {
+                    dismiss();
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return true;
-    }
-
-    public void setOnTargetClickListener(GuideBuilder.OnTargetClickListener onTargetClickListener) {
-        this.onTargetClickListener = onTargetClickListener;
     }
 }
