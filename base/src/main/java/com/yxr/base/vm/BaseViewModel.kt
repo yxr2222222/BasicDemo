@@ -20,7 +20,7 @@ import okhttp3.Dispatcher
  * @description ViewModel基类
  * @date 2020/9/17
  */
-abstract class BaseViewModel(lifecycle: LifecycleOwner) : AbsViewModel(lifecycle),
+abstract class BaseViewModel(lifecycle: LifecycleOwner?) : AbsViewModel(lifecycle),
     View.OnClickListener {
     companion object {
         private const val CLICK_INTERVAL_TIME = 250L

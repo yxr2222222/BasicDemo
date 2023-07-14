@@ -14,7 +14,7 @@ import com.yxr.base.adapter.ItemBinding
 /**
  *
  */
-abstract class BaseAdapterViewModel<T : ItemBinding>(lifecycle: LifecycleOwner) :
+abstract class BaseAdapterViewModel<T : ItemBinding>(lifecycle: LifecycleOwner?) :
     BaseStatusViewModel(lifecycle), OnItemClickListener,
     OnItemChildClickListener {
     abstract val layoutManager: RecyclerView.LayoutManager

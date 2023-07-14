@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.yxr.base.model.BaseStatus
 import com.yxr.base.widget.status.UIStatus
 
-abstract class BaseStatusViewModel(lifecycle: LifecycleOwner) : BaseViewModel(lifecycle) {
+abstract class BaseStatusViewModel(lifecycle: LifecycleOwner?) : BaseViewModel(lifecycle) {
     var status = MutableLiveData<BaseStatus?>()
 
     open fun reloadData() {

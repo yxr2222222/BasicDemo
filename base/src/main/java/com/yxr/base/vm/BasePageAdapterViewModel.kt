@@ -9,7 +9,7 @@ import com.yxr.base.http.model.IResponse
 import com.yxr.base.http.model.NetworkException
 import com.yxr.base.model.LoadingType
 
-abstract class BasePageAdapterViewModel<D, E : IResponse<D>, T : ItemBinding>(lifecycle: LifecycleOwner) :
+abstract class BasePageAdapterViewModel<D, T : ItemBinding>(lifecycle: LifecycleOwner?) :
     BaseAdapterViewModel<T>(lifecycle), OnRefreshLoadMoreListener {
 
     /**
@@ -130,7 +130,7 @@ abstract class BasePageAdapterViewModel<D, E : IResponse<D>, T : ItemBinding>(li
     /**
      * 加载数据的代码块，由子类实现
      */
-    abstract suspend fun loadDataBlock(): E?
+    abstract suspend fun loadDataBlock(): IResponse<D>?
 
     /**
      * 加载成功，由子类实现，处理好返回结果后返回，会自动填充到adapter中

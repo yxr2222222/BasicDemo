@@ -4,7 +4,7 @@ import androidx.lifecycle.LifecycleOwner
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter
 
 open class BaseBindingItemAdapter<T : ItemBinding>(
-    val lifecycleOwner: LifecycleOwner,
+    val lifecycleOwner: LifecycleOwner?,
     vararg layoutResIds: Int
 ) : BaseMultiItemQuickAdapter<T, BaseBindingViewHolder>() {
 
