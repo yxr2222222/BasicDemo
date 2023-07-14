@@ -17,7 +17,7 @@ import com.yxr.base.R
 import com.yxr.base.model.PermissionReq
 import com.yxr.base.widget.dialog.CancelConfirmDialog
 
-open class AbsViewModel(val lifecycle: LifecycleOwner) : ViewModel(), DefaultLifecycleObserver {
+open class AbsViewModel(var lifecycle: LifecycleOwner?) : ViewModel(), DefaultLifecycleObserver {
     private val permissionReqOb = MutableLiveData<PermissionReq>()
     private var permissionLauncher: ActivityResultLauncher<Array<String>>? = null
 
@@ -43,13 +43,14 @@ open class AbsViewModel(val lifecycle: LifecycleOwner) : ViewModel(), DefaultLif
 
     override fun onDestroy(owner: LifecycleOwner) {
         super.onDestroy(owner)
-        lifecycle.lifecycle.removeObserver(this)
+        lifecycle?.lifecycle?.removeObserver(this)
+        lifecycle = null
         permissionLauncher = null
     }
 
     open fun init() {
-        lifecycle.lifecycle.removeObserver(this)
-        lifecycle.lifecycle.addObserver(this)
+        lifecycle?.lifecycle?.removeObserver(this)
+        lifecycle?.lifecycle?.addObserver(this)
         initPermissionResultCaller()
     }
 
@@ -57,19 +58,10 @@ open class AbsViewModel(val lifecycle: LifecycleOwner) : ViewModel(), DefaultLif
         permissionReqOb.postValue(permissionReq)
     }
 
-    open fun getContext(): Context {
-        val context: Context? = when (lifecycle) {
-            is Fragment -> {
-                lifecycle.activity ?: BaseApplication.context
-            }
-            is Activity -> {
-                lifecycle
-            }
-            else -> {
-                BaseApplication.context
-            }
-        }
-        return context ?: BaseApplication.context
+    open fun getContext(): Context = when (val data = getLifecycleOwner()) {
+        is Fragment -> data.activity ?: BaseApplication.context
+        is Activity -> data
+        else -> BaseApplication.context
     }
 
     fun getFragmentManager(): FragmentManager? {
@@ -80,9 +72,10 @@ open class AbsViewModel(val lifecycle: LifecycleOwner) : ViewModel(), DefaultLif
         }
     }
 
-    fun getLifecycleOwner() = lifecycle
+    fun getLifecycleOwner(): LifecycleOwner? = lifecycle
 
     private fun initPermissionResultCaller() {
+        val lifecycle = getLifecycleOwner()
         if (lifecycle is ActivityResultCaller) {
             // 注册权限获取回调监听
             permissionLauncher =
