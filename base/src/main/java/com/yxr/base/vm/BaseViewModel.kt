@@ -164,6 +164,10 @@ abstract class BaseViewModel(lifecycle: LifecycleOwner?) : AbsViewModel(lifecycl
         loadingOb.postValue(LoadingOb(isShowLoading = false))
     }
 
+    open fun dismissFragment() {
+        dismissFragmentOb.postValue(true)
+    }
+
     /**
      * 关闭当前Activity
      */
