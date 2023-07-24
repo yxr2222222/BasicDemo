@@ -5,15 +5,33 @@
     android:layout_gravity="center"
     android:orientation="vertical">
 
-    <ProgressBar
-        android:id="@+id/progressbar"
-        android:elevation="@dimen/dp3"
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:layout_width="@dimen/dp64"
-        android:layout_height="@dimen/dp64"
+        android:elevation="@dimen/dp2"
         android:background="@drawable/shape_white_ffffff_radius8"
-        android:indeterminateBehavior="repeat"
-        android:indeterminateDrawable="@drawable/loading_anim"
-        android:padding="@dimen/dp20" />
+        android:gravity="center"
+        android:padding="@dimen/dp20"
+        android:orientation="vertical">
+
+        <ProgressBar
+            android:id="@+id/progressbar"
+            android:layout_width="@dimen/dp24"
+            android:layout_height="@dimen/dp24"
+            android:indeterminateBehavior="repeat"
+            android:indeterminateDrawable="@drawable/loading_anim"/>
+
+        <TextView
+            android:id="@+id/tvLoading"
+            android:maxWidth="@dimen/dp200"
+            android:text="Loading..."
+            android:textSize="@dimen/sp12"
+            android:textColor="@color/black_292929"
+            android:layout_marginTop="@dimen/dp16"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
 
 </RelativeLayout>

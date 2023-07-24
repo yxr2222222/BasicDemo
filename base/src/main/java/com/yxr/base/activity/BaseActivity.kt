@@ -95,14 +95,23 @@ abstract class BaseActivity<T : ViewDataBinding, VM : BaseViewModel> : AppCompat
     /**
      * 展示弹框类型的loading
      */
-    override fun showLoadingDialog() {
+    override fun showLoadingDialog(loadingText: String?) {
         if (!isFinishing) {
-            if (loadingDialog == null) {
-                loadingDialog = createLoadingDialog()
-                loadingDialog?.setCanceledOnTouchOutside(false)
+            try {
+                if (loadingDialog == null) {
+                    loadingDialog = createLoadingDialog(loadingText)
+                    loadingDialog?.setCanceledOnTouchOutside(false)
+                }
+                loadingDialog?.let { loadingDialog ->
+                    if (loadingDialog is DefaultLoadingDialog) {
+                        loadingDialog.setLoadingText(loadingText)
+                    }
+                }
+                loadingDialog?.setCancelable(isLoadingDialogCancelable())
+                loadingDialog?.show()
+            } catch (e: Throwable) {
+                e.printStackTrace()
             }
-            loadingDialog?.setCancelable(isLoadingDialogCancelable())
-            loadingDialog?.show()
         }
     }
 
@@ -142,13 +151,13 @@ abstract class BaseActivity<T : ViewDataBinding, VM : BaseViewModel> : AppCompat
         }
 
         viewModel.finishOb.observe(this) {
-            finish()
+            if (it == true) finish()
         }
 
         viewModel.loadingOb.observe(this) { showLoading ->
             if (showLoading != null) {
-                if (showLoading) {
-                    showLoadingDialog()
+                if (showLoading.isShowLoading) {
+                    showLoadingDialog(showLoading.loadingText)
                 } else {
                     dismissLoadingDialog()
                 }
@@ -167,7 +176,7 @@ abstract class BaseActivity<T : ViewDataBinding, VM : BaseViewModel> : AppCompat
      *
      * @return Loading的Dialog
      */
-    protected open fun createLoadingDialog(): Dialog {
+    protected open fun createLoadingDialog(loadingText: String?): Dialog {
         return DefaultLoadingDialog(this)
     }
 }

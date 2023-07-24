@@ -10,9 +10,21 @@ class TextBinding {
     companion object {
         @BindingAdapter(value = ["textChangedListener"], requireAll = false)
         @JvmStatic
-        fun bindingGifResId(textView: TextView, textChangedListener: TextWatcher?) {
+        fun bindingTextChangedListener(textView: TextView, textChangedListener: TextWatcher?) {
             textChangedListener?.let {
                 textView.addTextChangedListener(it)
+            }
+        }
+
+        @BindingAdapter(value = ["textRes"], requireAll = false)
+        @JvmStatic
+        fun bindingTextResId(textView: TextView, textRes: Int?) {
+            if (textRes != null && textRes > 0) {
+                try {
+                    textView.setText(textRes)
+                } catch (e: Throwable) {
+                    e.printStackTrace()
+                }
             }
         }
     }

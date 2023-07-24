@@ -30,7 +30,7 @@ interface IBaseUiFun {
 
     fun toast(message: String?)
 
-    fun showLoadingDialog()
+    fun showLoadingDialog(loadingText: String?)
 
     fun dismissLoadingDialog()
 }

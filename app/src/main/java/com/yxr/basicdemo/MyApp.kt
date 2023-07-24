@@ -5,6 +5,7 @@ import com.yxr.base.http.HttpConfig
 import com.yxr.base.http.callback.IHttpConfigCallback
 import com.yxr.base.util.PathUtil
 import okhttp3.Cache
+import okhttp3.HttpUrl
 
 class MyApp : BaseApplication() {
     companion object {
@@ -27,7 +28,7 @@ class MyApp : BaseApplication() {
             .addInterceptor { chain -> chain.proceed(chain.request()) }
             // 设置网络配置回调，不需要可不设置
             .callback(object : IHttpConfigCallback {
-                override fun getPublicHeaders(): MutableMap<String, String> {
+                override fun getPublicHeaders(httpUrl: HttpUrl): MutableMap<String, String> {
                     return headers
                 }
 

@@ -73,15 +73,24 @@ abstract class BaseFragment<T : ViewDataBinding, VM : BaseViewModel> :
     /**
      * 展示弹框类型的loading
      */
-    protected open fun showLoadingDialog() {
+    protected open fun showLoadingDialog(loadingText: String?) {
         activity?.isFinishing?.let {
             if (!it) {
-                if (loadingDialog == null) {
-                    loadingDialog = createLoadingDialog()
-                    loadingDialog?.setCanceledOnTouchOutside(false)
+                try {
+                    if (loadingDialog == null) {
+                        loadingDialog = createLoadingDialog(loadingText)
+                        loadingDialog?.setCanceledOnTouchOutside(false)
+                    }
+                    loadingDialog?.let { loadingDialog ->
+                        if (loadingDialog is DefaultLoadingDialog) {
+                            loadingDialog.setLoadingText(loadingText)
+                        }
+                    }
+                    loadingDialog?.setCancelable(isLoadingDialogCancelable())
+                    loadingDialog?.show()
+                } catch (e: Throwable) {
+                    e.printStackTrace()
                 }
-                loadingDialog?.setCancelable(isLoadingDialogCancelable())
-                loadingDialog?.show()
             }
         }
     }
@@ -110,13 +119,13 @@ abstract class BaseFragment<T : ViewDataBinding, VM : BaseViewModel> :
         }
 
         viewModel.finishOb.observe(viewLifecycleOwner) {
-            activity?.finish()
+            if (it == true) activity?.finish()
         }
 
         viewModel.loadingOb.observe(viewLifecycleOwner) { showLoading ->
             if (showLoading != null) {
-                if (showLoading) {
-                    showLoadingDialog()
+                if (showLoading.isShowLoading) {
+                    showLoadingDialog(showLoading.loadingText)
                 } else {
                     dismissLoadingDialog()
                 }
@@ -143,7 +152,7 @@ abstract class BaseFragment<T : ViewDataBinding, VM : BaseViewModel> :
      *
      * @return Loading的Dialog
      */
-    protected open fun createLoadingDialog(): Dialog? {
+    protected open fun createLoadingDialog(loadingText: String?): Dialog? {
         return if (activity == null) null else DefaultLoadingDialog(activity)
     }
 }

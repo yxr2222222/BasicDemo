@@ -2,12 +2,11 @@ package com.yxr.base.vm
 
 import android.view.View
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.listener.OnItemChildClickListener
 import com.chad.library.adapter.base.listener.OnItemClickListener
-import com.yxr.base.R
+import com.chad.library.adapter.base.listener.OnItemLongClickListener
 import com.yxr.base.adapter.BaseBindingItemAdapter
 import com.yxr.base.adapter.ItemBinding
 
@@ -16,7 +15,7 @@ import com.yxr.base.adapter.ItemBinding
  */
 abstract class BaseAdapterViewModel<T : ItemBinding>(lifecycle: LifecycleOwner?) :
     BaseStatusViewModel(lifecycle), OnItemClickListener,
-    OnItemChildClickListener {
+    OnItemChildClickListener, OnItemLongClickListener {
     abstract val layoutManager: RecyclerView.LayoutManager
     abstract val adapter: BaseBindingItemAdapter<T>
 
@@ -30,6 +29,35 @@ abstract class BaseAdapterViewModel<T : ItemBinding>(lifecycle: LifecycleOwner?)
         }
 
         adapter.setOnItemClickListener(this)
+
+        adapter.setOnItemLongClickListener(this)
+    }
+
+    final override fun onItemClick(adapter: BaseQuickAdapter<*, *>, view: View, position: Int) {
+        this.adapter.getItemOrNull(position)?.let { item ->
+            onItemClick(item, view, position)
+        }
+    }
+
+    final override fun onItemChildClick(
+        adapter: BaseQuickAdapter<*, *>,
+        view: View,
+        position: Int
+    ) {
+        this.adapter.getItemOrNull(position)?.let { item ->
+            onItemChildClick(item, view, position)
+        }
+    }
+
+    final override fun onItemLongClick(
+        adapter: BaseQuickAdapter<*, *>,
+        view: View,
+        position: Int
+    ): Boolean {
+        this.adapter.getItemOrNull(position)?.let { item ->
+            return onItemLongClick(item, view, position)
+        }
+        return true
     }
 
     /**
@@ -37,18 +65,6 @@ abstract class BaseAdapterViewModel<T : ItemBinding>(lifecycle: LifecycleOwner?)
      */
     open fun getChildClickViewIds(): IntArray? {
         return null
-    }
-
-    override fun onItemClick(adapter: BaseQuickAdapter<*, *>, view: View, position: Int) {
-        this.adapter.getItemOrNull(position)?.let { item ->
-            onItemClick(item, view, position)
-        }
-    }
-
-    override fun onItemChildClick(adapter: BaseQuickAdapter<*, *>, view: View, position: Int) {
-        this.adapter.getItemOrNull(position)?.let { item ->
-            onItemChildClick(item, view, position)
-        }
     }
 
     open fun refreshData(dataList: MutableList<T>?) {
@@ -69,5 +85,9 @@ abstract class BaseAdapterViewModel<T : ItemBinding>(lifecycle: LifecycleOwner?)
 
     open fun onItemChildClick(itemBinding: T, view: View, position: Int) {
 
+    }
+
+    open fun onItemLongClick(itemBinding: T, view: View, position: Int): Boolean {
+        return true
     }
 }

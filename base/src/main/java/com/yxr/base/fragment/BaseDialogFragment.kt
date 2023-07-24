@@ -1,6 +1,7 @@
 package com.yxr.base.fragment
 
 import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -22,9 +23,6 @@ abstract class BaseDialogFragment<T : ViewDataBinding, VM : BaseViewModel> : Dia
     protected open lateinit var rootView: View
     var onDismissListener: OnDismissListener? = null
 
-    /**
-     * 数据是否加载过了，用于数据懒加载
-     */
     private var loadingDialog: Dialog? = null
 
     override fun onCreateView(
@@ -74,15 +72,24 @@ abstract class BaseDialogFragment<T : ViewDataBinding, VM : BaseViewModel> : Dia
     /**
      * 展示弹框类型的loading
      */
-    protected open fun showLoadingDialog() {
+    protected open fun showLoadingDialog(loadingText: String?) {
         activity?.isFinishing?.let {
             if (!it) {
-                if (loadingDialog == null) {
-                    loadingDialog = createLoadingDialog()
-                    loadingDialog?.setCanceledOnTouchOutside(false)
+                try {
+                    if (loadingDialog == null) {
+                        loadingDialog = createLoadingDialog(loadingText)
+                        loadingDialog?.setCanceledOnTouchOutside(false)
+                    }
+                    loadingDialog?.let { loadingDialog ->
+                        if (loadingDialog is DefaultLoadingDialog) {
+                            loadingDialog.setLoadingText(loadingText)
+                        }
+                    }
+                    loadingDialog?.setCancelable(isLoadingDialogCancelable())
+                    loadingDialog?.show()
+                } catch (e: Throwable) {
+                    e.printStackTrace()
                 }
-                loadingDialog?.setCancelable(isLoadingDialogCancelable())
-                loadingDialog?.show()
             }
         }
     }
@@ -106,18 +113,24 @@ abstract class BaseDialogFragment<T : ViewDataBinding, VM : BaseViewModel> : Dia
     }
 
     protected open fun initListener() {
+        viewModel.dismissFragmentOb.observe(viewLifecycleOwner) {
+            if (it == true) {
+                dismiss()
+            }
+        }
+
         viewModel.toastStringOb.observe(viewLifecycleOwner) { message ->
             toast(message)
         }
 
         viewModel.finishOb.observe(viewLifecycleOwner) {
-            activity?.finish()
+            if (it == true) activity?.finish()
         }
 
         viewModel.loadingOb.observe(viewLifecycleOwner) { showLoading ->
             if (showLoading != null) {
-                if (showLoading) {
-                    showLoadingDialog()
+                if (showLoading.isShowLoading) {
+                    showLoadingDialog(showLoading.loadingText)
                 } else {
                     dismissLoadingDialog()
                 }
@@ -137,13 +150,23 @@ abstract class BaseDialogFragment<T : ViewDataBinding, VM : BaseViewModel> : Dia
      *
      * @return Loading的Dialog
      */
-    protected open fun createLoadingDialog(): Dialog? {
+    protected open fun createLoadingDialog(loadingText: String?): Dialog? {
         return if (activity == null) null else DefaultLoadingDialog(activity)
     }
 
     override fun dismiss() {
+        onInnerDismiss()
         super.dismiss()
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        onInnerDismiss()
+        super.onDismiss(dialog)
+    }
+
+    private fun onInnerDismiss() {
         onDismissListener?.onDismiss()
+        onDismissListener = null
     }
 
     interface OnDismissListener {

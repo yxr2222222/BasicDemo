@@ -12,6 +12,7 @@ import com.yxr.base.http.manager.HttpManager
 import com.yxr.base.http.model.IResponse
 import com.yxr.base.http.model.NetworkException
 import com.yxr.base.http.util.NetworkExceptionUtil
+import com.yxr.base.model.LoadingOb
 import kotlinx.coroutines.*
 import okhttp3.Dispatcher
 
@@ -29,8 +30,9 @@ abstract class BaseViewModel(lifecycle: LifecycleOwner?) : AbsViewModel(lifecycl
     abstract val viewModelId: Int
 
     val toastStringOb = MutableLiveData<String>()
-    val loadingOb = MutableLiveData<Boolean>()
+    val loadingOb = MutableLiveData<LoadingOb>()
     val finishOb = MutableLiveData<Boolean>()
+    val dismissFragmentOb = MutableLiveData<Boolean>()
 
     private var preClickTime = 0L
     private var preClickView: Int? = null
@@ -76,11 +78,12 @@ abstract class BaseViewModel(lifecycle: LifecycleOwner?) : AbsViewModel(lifecycl
         onSuccess: (T?) -> Unit,
         onError: suspend (exception: NetworkException) -> Unit = {},
         isNeedLoading: Boolean = true,
+        loadingText: String? = null,
         isShowError: Boolean = false,
         isShowErrorDetail: Boolean = false,
     ) {
         if (isNeedLoading) {
-            showLoading()
+            showLoading(loadingText)
         }
         viewModelScope.launchRequest(block, onSuccess = { data ->
             if (isNeedLoading) {
@@ -150,15 +153,15 @@ abstract class BaseViewModel(lifecycle: LifecycleOwner?) : AbsViewModel(lifecycl
     /**
      * 展示loading弹框
      */
-    open fun showLoading() {
-        loadingOb.postValue(true)
+    open fun showLoading(loadingText: String? = null) {
+        loadingOb.postValue(LoadingOb(isShowLoading = true, loadingText))
     }
 
     /**
      * 隐藏loading弹框
      */
     open fun dismissLoading() {
-        loadingOb.postValue(false)
+        loadingOb.postValue(LoadingOb(isShowLoading = false))
     }
 
     /**

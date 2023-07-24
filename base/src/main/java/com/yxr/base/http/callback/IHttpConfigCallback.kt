@@ -1,5 +1,7 @@
 package com.yxr.base.http.callback
 
+import okhttp3.HttpUrl
+
 interface IHttpConfigCallback {
-    fun getPublicHeaders(): MutableMap<String, String>
+    fun getPublicHeaders(httpUrl: HttpUrl): MutableMap<String, String>
 }
