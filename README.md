@@ -98,7 +98,7 @@
    添加依赖
 
    ```java
-   implementation 'com.github.yxr2222222:BasicDemo:v1.1.0.202212081'
+   implementation 'com.github.yxr2222222:BasicDemo:v1.2.14.202307241'
    ```
 
 ### 使用说明
