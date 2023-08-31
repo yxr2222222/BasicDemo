@@ -3,7 +3,7 @@ package com.yxr.base.util
 import com.yxr.base.BaseApplication
 
 class DisplayUtil {
-    companion object{
+    companion object {
         @JvmStatic
         fun getScreenWidth(): Int {
             return BaseApplication.context.resources.displayMetrics.widthPixels
@@ -12,6 +12,22 @@ class DisplayUtil {
         @JvmStatic
         fun getScreenHeight(): Int {
             return BaseApplication.context.resources.displayMetrics.heightPixels
+        }
+
+        @JvmStatic
+        fun getStatusHeight(): Int {
+            return try {
+                val resourceId: Int = BaseApplication.context.resources
+                    .getIdentifier("status_bar_height", "dimen", "android")
+                if (resourceId > 0) {
+                    BaseApplication.context.resources.getDimensionPixelSize(resourceId)
+                } else {
+                    dp2px(28f)
+                }
+            } catch (e: Throwable) {
+                e.printStackTrace()
+                dp2px(28f)
+            }
         }
 
         /**

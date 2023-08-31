@@ -25,7 +25,7 @@ abstract class BasePageAdapterViewModel<D, T : ItemBinding>(lifecycle: Lifecycle
     /**
      * 获取当前页码
      */
-    var page = 0
+    var page = initPage()
         private set
 
     /**
@@ -51,10 +51,15 @@ abstract class BasePageAdapterViewModel<D, T : ItemBinding>(lifecycle: Lifecycle
 
     override fun refreshData(isClear: Boolean, dataList: MutableList<T>?) {
         super.refreshData(isClear, dataList)
-        hasMore.postValue(dataList != null && dataList.size > 0)
+        hasMore.value = checkHasMore(dataList)
         page++
         loadFinish()
     }
+
+    protected open fun checkHasMore(dataList: MutableList<T>?) =
+        dataList != null && dataList.size > 0
+
+    protected open fun initPage() = 0
 
     /**
      * 加载新数据
@@ -63,9 +68,12 @@ abstract class BasePageAdapterViewModel<D, T : ItemBinding>(lifecycle: Lifecycle
      */
     open fun refresh(isAutoRefresh: Boolean = false) {
         if (isNotLoading()) {
-            page = 0
-            loadType.postValue(if (isAutoRefresh) LoadingType.AUTO_REFRESH else LoadingType.REFRESH)
-            loadData()
+            page = initPage()
+            hasMore.value = true
+
+            val state = if (isAutoRefresh) LoadingType.AUTO_REFRESH else LoadingType.REFRESH
+            loadType.value = state
+            loadData(state)
         }
     }
 
@@ -74,8 +82,8 @@ abstract class BasePageAdapterViewModel<D, T : ItemBinding>(lifecycle: Lifecycle
      */
     open fun loadMore() {
         if (isNotLoading()) {
-            loadType.postValue(LoadingType.LOAD_MORE)
-            loadData()
+            loadType.value = LoadingType.LOAD_MORE
+            loadData(LoadingType.LOAD_MORE)
         }
     }
 
@@ -86,8 +94,9 @@ abstract class BasePageAdapterViewModel<D, T : ItemBinding>(lifecycle: Lifecycle
      */
     open fun loadMore(isAutoLoadMore: Boolean) {
         if (isNotLoading()) {
-            loadType.postValue(if (isAutoLoadMore) LoadingType.AUTO_LOAD_MORE else LoadingType.LOAD_MORE)
-            loadData()
+            val state = if (isAutoLoadMore) LoadingType.AUTO_LOAD_MORE else LoadingType.LOAD_MORE
+            loadType.value = state
+            loadData(state)
         }
     }
 
@@ -102,9 +111,9 @@ abstract class BasePageAdapterViewModel<D, T : ItemBinding>(lifecycle: Lifecycle
     /**
      * 加载数据
      */
-    open fun loadData() {
+    open fun loadData(loadingType: LoadingType) {
         launchRequest(block = {
-            loadDataBlock()
+            loadDataBlock(loadingType)
         }, onSuccess = { data ->
             val itemList = onLoadSuccess(data)
             refreshData(itemList)
@@ -124,13 +133,13 @@ abstract class BasePageAdapterViewModel<D, T : ItemBinding>(lifecycle: Lifecycle
      * 加载结束处理状态
      */
     open fun loadFinish() {
-        loadType.postValue(LoadingType.IDLE)
+        loadType.value = LoadingType.IDLE
     }
 
     /**
      * 加载数据的代码块，由子类实现
      */
-    abstract suspend fun loadDataBlock(): IResponse<D>?
+    abstract suspend fun loadDataBlock(loadingType: LoadingType): IResponse<D>?
 
     /**
      * 加载成功，由子类实现，处理好返回结果后返回，会自动填充到adapter中

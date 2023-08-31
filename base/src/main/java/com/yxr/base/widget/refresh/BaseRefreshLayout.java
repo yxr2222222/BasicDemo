@@ -4,6 +4,8 @@ import android.content.Context;
 import android.util.AttributeSet;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
+import com.scwang.smartrefresh.layout.header.ClassicsHeader;
 
 public class BaseRefreshLayout extends SmartRefreshLayout {
 
@@ -26,9 +28,9 @@ public class BaseRefreshLayout extends SmartRefreshLayout {
         //是否启用越界拖动（仿苹果效果）
         setEnableOverScrollDrag(true);
         // 设置默认的刷新布局
-        setRefreshHeader(new DefaultRefreshHeader(getContext()));
+        setRefreshHeader(new ClassicsHeader(getContext()));
         // 设置默认的加载更多布局
-        setRefreshFooter(new DefaultRefreshFooter(getContext()));
+        setRefreshFooter(new ClassicsFooter(getContext()));
         //是否在刷新的时候禁止列表的操作
         setDisableContentWhenRefresh(false);
         //是否在加载的时候禁止列表的操作

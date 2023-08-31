@@ -2,6 +2,7 @@ package com.yxr.base.vm
 
 import android.view.View
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.listener.OnItemChildClickListener
@@ -18,6 +19,8 @@ abstract class BaseAdapterViewModel<T : ItemBinding>(lifecycle: LifecycleOwner?)
     OnItemChildClickListener, OnItemLongClickListener {
     abstract val layoutManager: RecyclerView.LayoutManager
     abstract val adapter: BaseBindingItemAdapter<T>
+
+    val isEmptyData = MutableLiveData(true)
 
     override fun onCreate(owner: LifecycleOwner) {
         super.onCreate(owner)
@@ -77,6 +80,7 @@ abstract class BaseAdapterViewModel<T : ItemBinding>(lifecycle: LifecycleOwner?)
         } else if (dataList != null) {
             adapter.addData(dataList)
         }
+        isEmptyData.value = adapter.itemCount <= 0
     }
 
     open fun onItemClick(itemBinding: T, view: View, position: Int) {

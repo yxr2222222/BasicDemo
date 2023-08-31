@@ -28,7 +28,6 @@ abstract class BaseStatusFragment<T : ViewDataBinding, VM : BaseStatusViewModel>
         binding = DataBindingUtil.inflate(inflater, layoutId, null, false)
         binding.lifecycleOwner = this
 
-        viewModel.init()
         binding.setVariable(viewModel.viewModelId, viewModel)
 
         // 创建多状态控件

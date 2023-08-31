@@ -4,6 +4,7 @@ import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.yxr.base.R
 
@@ -22,7 +23,8 @@ class GlideBinding {
         ) {
             val requestOptions = glideOptions ?: RequestOptions.placeholderOf(
                 glidePlaceholder ?: R.color.white_eeeeee
-            )
+            ).diskCacheStrategy(DiskCacheStrategy.DATA)
+
             Glide.with(imageView)
                 .load(glideImage)
                 .apply(requestOptions)

@@ -6,6 +6,8 @@ interface IResponse<T> {
      */
     fun isSuccess(): Boolean
 
+    fun code(): Int?
+
     /**
      * 错误信息
      */

@@ -2,6 +2,8 @@ package com.yxr.base.fragment
 
 import android.app.Dialog
 import android.content.DialogInterface
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -17,7 +19,7 @@ import com.yxr.base.widget.dialog.DefaultLoadingDialog
 
 abstract class BaseDialogFragment<T : ViewDataBinding, VM : BaseViewModel> : DialogFragment() {
     protected abstract val layoutId: Int
-    protected abstract val viewModel: VM
+    protected lateinit var viewModel: VM
 
     protected lateinit var binding: T
     protected open lateinit var rootView: View
@@ -30,17 +32,21 @@ abstract class BaseDialogFragment<T : ViewDataBinding, VM : BaseViewModel> : Dia
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        viewModel = createViewModel()
+
         rootView = initBinding(inflater)
 
         // 初始化事件监听
         initListener()
         initData()
 
+        viewModel.init()
         return rootView
     }
 
     override fun onStart() {
         super.onStart()
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         setDialogStyle()
     }
 
@@ -106,8 +112,6 @@ abstract class BaseDialogFragment<T : ViewDataBinding, VM : BaseViewModel> : Dia
     protected open fun initBinding(inflater: LayoutInflater): View {
         binding = DataBindingUtil.inflate(inflater, layoutId, null, false)
         binding.lifecycleOwner = this
-
-        viewModel.init()
         binding.setVariable(viewModel.viewModelId, viewModel)
         return binding.root
     }
@@ -168,6 +172,8 @@ abstract class BaseDialogFragment<T : ViewDataBinding, VM : BaseViewModel> : Dia
         onDismissListener?.onDismiss()
         onDismissListener = null
     }
+
+    abstract fun createViewModel(): VM
 
     interface OnDismissListener {
         fun onDismiss()

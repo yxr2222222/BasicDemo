@@ -1,8 +1,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.yxr.base">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <queries>
+        <!-- oppo的权限设置 -->
+        <package android:name="com.autonavi.minimap" />
+        <!-- vivo的权限设置 -->
+        <package android:name="com.bairenkeji.icaller" />
+        <!-- 酷派的权限设置 -->
+        <package android:name="com.yulong.android.security" />
+    </queries>
 
     <application>
 

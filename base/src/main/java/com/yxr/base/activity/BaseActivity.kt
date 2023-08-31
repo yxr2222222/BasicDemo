@@ -10,6 +10,7 @@ import androidx.databinding.ViewDataBinding
 import com.gyf.immersionbar.ImmersionBar
 import com.yxr.base.R
 import com.yxr.base.inf.IBaseUiFun
+import com.yxr.base.util.KeyboardUtil
 import com.yxr.base.util.ToastUtil
 import com.yxr.base.vm.BaseViewModel
 import com.yxr.base.widget.dialog.DefaultLoadingDialog
@@ -23,7 +24,7 @@ import com.yxr.base.widget.dialog.DefaultLoadingDialog
 abstract class BaseActivity<T : ViewDataBinding, VM : BaseViewModel> : AppCompatActivity(),
     IBaseUiFun {
     protected abstract val layoutId: Int
-    protected abstract val viewModel: VM
+    protected lateinit var viewModel: VM
 
     protected lateinit var binding: T
     protected lateinit var contentWidget: View
@@ -33,11 +34,12 @@ abstract class BaseActivity<T : ViewDataBinding, VM : BaseViewModel> : AppCompat
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initImmersion()
+
         binding = DataBindingUtil.inflate(layoutInflater, layoutId, null, false)
         binding.lifecycleOwner = this
         contentWidget = binding.root
 
-        viewModel.init()
+        viewModel = createViewModel()
         binding.setVariable(viewModel.viewModelId, viewModel)
 
         setContentView(contentWidget)
@@ -46,11 +48,14 @@ abstract class BaseActivity<T : ViewDataBinding, VM : BaseViewModel> : AppCompat
         initListener()
         // 初始化数据
         initData()
+
+        viewModel.init()
     }
 
     override fun onDestroy() {
-        loadingDialog = null
         dismissLoadingDialog()
+        loadingDialog = null
+        KeyboardUtil.hideKeyboard(this)
         super.onDestroy()
         binding.unbind()
     }
@@ -131,6 +136,7 @@ abstract class BaseActivity<T : ViewDataBinding, VM : BaseViewModel> : AppCompat
         if (needImmersion()) {
             ImmersionBar.with(this)
                 .statusBarColor(R.color.transparent)
+                .statusBarDarkFont(statusBarDarkFont())
                 .fitsSystemWindows(false)
                 .init()
         } else {
@@ -179,4 +185,6 @@ abstract class BaseActivity<T : ViewDataBinding, VM : BaseViewModel> : AppCompat
     protected open fun createLoadingDialog(loadingText: String?): Dialog {
         return DefaultLoadingDialog(this)
     }
+
+    abstract fun createViewModel(): VM
 }

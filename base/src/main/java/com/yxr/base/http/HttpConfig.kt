@@ -60,6 +60,8 @@ class HttpConfig private constructor(
      */
     val interceptorList = mutableListOf<Interceptor>()
 
+    val globalErrorCodeList = mutableListOf<Int>()
+
     class Builder {
         private val httpConfig =
             HttpConfig(createSSLSocketFactory(), TrustAllCerts(), TrustAllHostnameVerifier())
@@ -89,6 +91,13 @@ class HttpConfig private constructor(
          */
         fun retryNum(retryNum: Int): Builder {
             httpConfig.retryNum = retryNum
+            return this
+        }
+
+        fun addGlobalErrorCode(errorCode: Int): Builder {
+            if (!httpConfig.globalErrorCodeList.contains(errorCode)) {
+                httpConfig.globalErrorCodeList.add(errorCode)
+            }
             return this
         }
 

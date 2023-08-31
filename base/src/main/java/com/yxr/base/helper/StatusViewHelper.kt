@@ -86,7 +86,7 @@ open class StatusViewHelper(private val statusView: MultipleStatusView) : IBaseS
             } else if (UIStatus.EMPTY == uiStatus) {
                 changUiStatus(UIStatus.EMPTY)
             } else if (UIStatus.ERROR == uiStatus) {
-                changUiStatus(UIStatus.ERROR)
+                showError(status.message, status.retryText)
             }
         }
     }

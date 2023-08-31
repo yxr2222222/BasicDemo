@@ -1,9 +1,10 @@
 package com.yxr.base.util
 
+import android.util.Log
 import java.util.regex.Pattern
 
 class StringUtil {
-    companion object{
+    companion object {
         @JvmStatic
         fun isZiMu(c: Char): Boolean {
             return c.code in 0x61..0x7a || c.code in 0x41..0x5a
@@ -100,6 +101,34 @@ class StringUtil {
             }
             val pattern = Pattern.compile("^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$")
             return pattern.matcher(email).matches()
+        }
+
+        @JvmStatic
+        fun isPhoneNum(num: String?): Boolean {
+            if (num.isNullOrBlank() || num.length != 11) return false
+            val regExp =
+                "^(13[0-9]|14[01456879]|15[0-3,5-9]|16[2567]|17[0-8]|18[0-9]|19[0-3,5-9])\\d{8}\$"
+            val p = Pattern.compile(regExp)
+            val m = p.matcher(num)
+            return m.matches()
+        }
+
+        /**
+         * 身份证号校验
+         */
+        @JvmStatic
+        fun isIdCardNum(idCard: String?): Boolean {
+            if (idCard.isNullOrBlank()) return false
+            val patt = when (idCard.length) {
+                15 -> "^[1-9]\\d{5}\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{3}$"
+                18 -> "^[1-9]\\d{5}(18|19|([23]\\d))\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$"
+                else -> return false
+            }
+            val p = Pattern.compile(patt)
+            val m = p.matcher(idCard)
+            val matches = m.matches()
+            Log.d("TTTTTTTAG", "idCard: $matches")
+            return matches
         }
     }
 }

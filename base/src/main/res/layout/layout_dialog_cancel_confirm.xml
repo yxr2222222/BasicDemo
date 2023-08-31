@@ -1,32 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="280dp"
-    android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:background="@drawable/shape_white_ffffff_radius10"
     android:gravity="center"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/tvTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/dp14"
-        android:layout_marginTop="@dimen/dp32"
-        android:paddingRight="@dimen/dp14"
-        tools:text="这是一个标题"
+        android:layout_marginHorizontal="@dimen/dp32"
+        android:layout_marginTop="@dimen/dp40"
+        android:gravity="center"
+        android:lineSpacingExtra="@dimen/dp4"
         android:textColor="@color/black_333333"
-        android:textSize="@dimen/sp14" />
+        android:textSize="@dimen/sp16"
+        tools:text="这是一个标题" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp0_5"
-        android:layout_marginTop="@dimen/dp32"
-        android:background="@color/gray_d4d4d4" />
+        android:layout_marginTop="@dimen/dp40"
+        android:background="@color/white_eeeeee" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp44"
+        android:layout_height="@dimen/dp48"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -37,22 +38,24 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="@string/cancel"
+            android:textStyle="bold"
             android:textColor="@color/gray_a7a7a7"
-            android:textSize="@dimen/sp14"/>
+            android:textSize="@dimen/sp16" />
 
         <View
             android:layout_width="@dimen/dp0_5"
             android:layout_height="match_parent"
-            android:background="@color/gray_d4d4d4" />
+            android:background="@color/white_eeeeee" />
 
         <TextView
             android:id="@+id/tvConfirm"
             android:layout_width="@dimen/dp0"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:textStyle="bold"
             android:gravity="center"
             android:text="@string/confirm"
             android:textColor="@color/blue_007aff"
-            android:textSize="@dimen/sp14"/>
+            android:textSize="@dimen/sp16" />
     </LinearLayout>
 </LinearLayout>

@@ -35,6 +35,7 @@
         <attr name="imageShow" format="boolean" />
         <attr name="centerGravity" format="boolean" />
         <attr name="isTextFill" format="boolean" />
+        <attr name="textSingleLine" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="GifImageTextView">

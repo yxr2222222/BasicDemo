@@ -98,7 +98,7 @@ class PathUtil {
             } else if ("file".equals(uri.scheme, ignoreCase = true)) {
                 return uri.path
             }
-            return null
+            return uri.path
         }
 
         @JvmStatic

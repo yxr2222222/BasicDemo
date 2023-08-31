@@ -71,7 +71,7 @@ public class TitleBar extends ViewGroup implements View.OnClickListener {
     @SuppressLint("UseCompatLoadingForDrawables")
     private void initView(Context context) {
         float density = getResources().getDisplayMetrics().density;
-        int leftPadding = (int) (density * 10);
+        int leftPadding = (int) (density * 12);
         mLeftImageView = new ImageView(context);
         mLeftImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         mLeftImageView.setPadding(leftPadding, leftPadding, leftPadding, leftPadding);

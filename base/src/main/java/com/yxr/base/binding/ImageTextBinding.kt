@@ -16,9 +16,21 @@ class ImageTextBinding {
         @JvmStatic
         fun bindingImageText(
             view: ImageTextView,
-            itvChecked: Boolean = false,
+            itvChecked: Boolean? = false,
         ) {
-            view.setCheck(itvChecked)
+            view.setCheck(itvChecked == true)
+        }
+
+        @BindingAdapter(
+            "itvTextBold",
+            requireAll = false
+        )
+        @JvmStatic
+        fun setTextBold(
+            view: ImageTextView,
+            itvTextBold: Boolean? = false,
+        ) {
+            view.setTextBold(itvTextBold == true)
         }
 
         @BindingAdapter(
@@ -36,7 +48,38 @@ class ImageTextBinding {
                 view.setImageUncheckRes(this)
             }
             itvNormalTextRes?.run {
-                view.setNormalText(view.resources.getString(itvNormalTextRes))
+                if (this > 0) {
+                    try {
+                        view.setNormalText(view.resources.getString(itvNormalTextRes))
+                    } catch (e: Throwable) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+        }
+
+        @BindingAdapter(
+            "itvCheckedImgRes",
+            "itvCheckedTextRes",
+            requireAll = false
+        )
+        @JvmStatic
+        fun bindingImageTextChecked(
+            view: ImageTextView,
+            @DrawableRes itvCheckedImgRes: Int? = null,
+            @StringRes itvCheckedTextRes: Int? = null
+        ) {
+            itvCheckedImgRes?.run {
+                view.setImageCheckRes(this)
+            }
+            itvCheckedTextRes?.run {
+                if (this > 0) {
+                    try {
+                        view.setText(view.resources.getString(itvCheckedTextRes))
+                    } catch (e: Throwable) {
+                        e.printStackTrace()
+                    }
+                }
             }
         }
 

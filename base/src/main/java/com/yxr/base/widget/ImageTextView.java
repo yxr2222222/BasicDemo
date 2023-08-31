@@ -44,6 +44,7 @@ public class ImageTextView extends LinearLayout {
     private boolean checkBold = false;
     private boolean imageShow = true;
     private boolean centerGravity = true;
+    private boolean textSingleLine = false;
 
     public ImageTextView(Context context) {
         this(context, null);
@@ -85,6 +86,7 @@ public class ImageTextView extends LinearLayout {
             textBold = array.getBoolean(R.styleable.ImageTextView_textBold, false);
             imageShow = array.getBoolean(R.styleable.ImageTextView_imageShow, true);
             centerGravity = array.getBoolean(R.styleable.ImageTextView_centerGravity, true);
+            textSingleLine = array.getBoolean(R.styleable.ImageTextView_textSingleLine, false);
             isTextFill = array.getBoolean(R.styleable.ImageTextView_isTextFill, false);
             imageTextPadding = (int) array.getDimension(R.styleable.ImageTextView_imageTextPadding, defaultPadding);
             array.recycle();
@@ -108,6 +110,7 @@ public class ImageTextView extends LinearLayout {
             textParams.weight = 1;
             textView.setGravity(Gravity.CENTER);
         }
+        textView.setSingleLine(textSingleLine);
         textView.setLayoutParams(textParams);
         setText(false);
         textView.setTextSize(textSize);
@@ -144,20 +147,18 @@ public class ImageTextView extends LinearLayout {
 
         imageParent.setVisibility(imageShow ? VISIBLE : GONE);
         textView.setVisibility(textShow ? VISIBLE : GONE);
+    }
 
-        textView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ImageTextView.this.performClick();
-            }
-        });
+    @Override
+    public void setOnClickListener(@Nullable OnClickListener l) {
+        super.setOnClickListener(l);
 
-        imageParent.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ImageTextView.this.performClick();
-            }
-        });
+        if (textView != null && l != null) {
+            textView.setOnClickListener(v -> ImageTextView.this.performClick());
+        }
+        if (imageParent != null && l != null) {
+            imageParent.setOnClickListener(v -> ImageTextView.this.performClick());
+        }
     }
 
     public void setImageCheckRes(@DrawableRes int imageCheckRes) {
@@ -217,6 +218,15 @@ public class ImageTextView extends LinearLayout {
     public void setNormalText(String text) {
         this.text = text;
         textView.setText(text);
+    }
+
+    public void setTextBold(boolean textBold) {
+        this.textBold = textBold;
+        if (textBold) {
+            textView.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+        } else {
+            textView.setTypeface(Typeface.defaultFromStyle(Typeface.NORMAL));
+        }
     }
 
     public ImageView getImageView() {

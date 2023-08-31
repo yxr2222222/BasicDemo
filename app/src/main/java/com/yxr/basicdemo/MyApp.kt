@@ -32,6 +32,9 @@ class MyApp : BaseApplication() {
                     return headers
                 }
 
+                override fun onGlobalError(code: Int) {
+
+                }
             })
             .build()
     }

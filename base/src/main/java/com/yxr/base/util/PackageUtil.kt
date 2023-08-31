@@ -13,7 +13,7 @@ import androidx.core.content.FileProvider
 import java.io.File
 
 class PackageUtil {
-    companion object{
+    companion object {
 
         private var isDebug: Boolean? = null
 
@@ -35,6 +35,10 @@ class PackageUtil {
             }
             return isDebug!!
         }
+
+        @JvmStatic
+        fun appIsExist(context: Context?, packageName: String?) =
+            getPackageInfo(context, packageName) != null
 
         /**
          * 获取包名
@@ -103,10 +107,11 @@ class PackageUtil {
          */
         @JvmStatic
         fun getPackageInfo(context: Context?, packageName: String?): PackageInfo? {
+            if (packageName.isNullOrBlank()) return null
             try {
                 val packageManager = getPackageManager(context)
-                return packageManager?.getPackageInfo(packageName!!, 0)
-            } catch (e: PackageManager.NameNotFoundException) {
+                return packageManager?.getPackageInfo(packageName, 0)
+            } catch (e: Throwable) {
                 e.printStackTrace()
             }
             return null
@@ -193,13 +198,13 @@ class PackageUtil {
         }
 
         @JvmStatic
-        fun jumpSetting(activity: Activity) {
+        fun jumpSetting(context: Context) {
             try {
                 val intent = Intent()
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 intent.action = "android.settings.APPLICATION_DETAILS_SETTINGS"
-                intent.data = Uri.fromParts("package", activity.packageName, null)
-                activity.startActivity(intent)
+                intent.data = Uri.fromParts("package", context.packageName, null)
+                context.startActivity(intent)
             } catch (e: Exception) {
                 e.printStackTrace()
             }

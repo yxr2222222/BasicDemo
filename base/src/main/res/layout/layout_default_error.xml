@@ -13,10 +13,12 @@
 
     <TextView
         android:id="@+id/tvRetryHint"
-        android:layout_width="wrap_content"
+        android:gravity="center"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp36"
         android:text="@string/load_error_refresh_please"
+        android:layout_marginHorizontal="@dimen/dp48"
         android:textColor="@color/gray_999999"
         android:textSize="@dimen/sp16" />
 

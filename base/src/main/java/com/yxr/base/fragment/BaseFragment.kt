@@ -22,7 +22,7 @@ import com.yxr.base.widget.dialog.DefaultLoadingDialog
 abstract class BaseFragment<T : ViewDataBinding, VM : BaseViewModel> :
     Fragment() {
     protected abstract val layoutId: Int
-    protected abstract val viewModel: VM
+    protected lateinit var viewModel: VM
 
     protected lateinit var binding: T
     protected open lateinit var rootView: View
@@ -38,12 +38,15 @@ abstract class BaseFragment<T : ViewDataBinding, VM : BaseViewModel> :
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        viewModel = createViewModel()
+
         rootView = initBinding(inflater)
 
         // 初始化事件监听
         initListener()
         initData()
 
+        viewModel.init()
         return rootView
     }
 
@@ -108,7 +111,6 @@ abstract class BaseFragment<T : ViewDataBinding, VM : BaseViewModel> :
         binding = DataBindingUtil.inflate(inflater, layoutId, null, false)
         binding.lifecycleOwner = this
 
-        viewModel.init()
         binding.setVariable(viewModel.viewModelId, viewModel)
         return binding.root
     }
@@ -155,4 +157,6 @@ abstract class BaseFragment<T : ViewDataBinding, VM : BaseViewModel> :
     protected open fun createLoadingDialog(loadingText: String?): Dialog? {
         return if (activity == null) null else DefaultLoadingDialog(activity)
     }
+
+    abstract fun createViewModel(): VM
 }

@@ -85,25 +85,37 @@ abstract class BaseViewModel(lifecycle: LifecycleOwner?) : AbsViewModel(lifecycl
         if (isNeedLoading) {
             showLoading(loadingText)
         }
+        var isErrorCallback = false
         viewModelScope.launchRequest(block, onSuccess = { data ->
             if (isNeedLoading) {
                 dismissLoading()
             }
             if (data == null) {
-                onError(
-                    NetworkException(
-                        HttpErrorCode.CODE_NULL_DATA,
-                        NetworkExceptionUtil.getMessage(R.string.default_null_body_exception),
-                    )
-                )
+                val error = NetworkExceptionUtil.getMessage(R.string.default_null_body_exception)
+                if (isShowError || isShowErrorDetail) {
+                    showToast(error)
+                }
+                if (!isErrorCallback) {
+                    isErrorCallback = true
+                    onError(NetworkException(HttpErrorCode.CODE_NULL_DATA, error))
+                }
             } else if (!data.isSuccess()) {
-                onError(
-                    NetworkException(
-                        HttpErrorCode.CODE_UNKNOWN,
-                        data.error()
-                            ?: NetworkExceptionUtil.getMessage(R.string.default_null_body_exception),
-                    )
-                )
+                val error = data.error()
+                    ?: NetworkExceptionUtil.getMessage(R.string.default_null_body_exception)
+                if (isShowError || isShowErrorDetail) {
+                    showToast(error)
+                }
+                if (!isErrorCallback) {
+                    isErrorCallback = true
+                    onError(NetworkException(data.code() ?: HttpErrorCode.CODE_UNKNOWN, error))
+                }
+
+                val httpConfig = HttpManager.get().httpConfig
+                httpConfig.globalErrorCodeList.forEach { code ->
+                    if (data.code() == code) {
+                        httpConfig.configCallback?.onGlobalError(code)
+                    }
+                }
             } else {
                 onSuccess(data.getData())
             }
@@ -118,7 +130,10 @@ abstract class BaseViewModel(lifecycle: LifecycleOwner?) : AbsViewModel(lifecycl
                     showToast(exception.message)
                 }
             }
-            onError(exception)
+            if (!isErrorCallback) {
+                isErrorCallback = true
+                onError(exception)
+            }
         })
     }
 
