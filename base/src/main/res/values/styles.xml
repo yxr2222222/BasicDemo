@@ -5,6 +5,16 @@
         <item name="android:windowAnimationStyle">@style/AnimationActivity</item>
     </style>
 
+    <style name="BaseTranslucentTheme" parent="BaseTheme">
+        <!--注意：Android 21（5.0）这个系统开始状态栏透明的话需要把颜色设置为透明，并且上面那个属性需要设置为false-->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <!--注意：导航栏设置透明是为了让activity内容延伸至状态栏，导航栏实际为半透明加暗效果-->
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@color/transparent</item>
+    </style>
+
     <style name="AnimationActivity" parent="@android:style/Theme.Light.NoTitleBar">
         <!-- 当我们从 A1 启动 A2 时，A2 出现在屏幕上 -->
         <item name="android:activityOpenEnterAnimation">@anim/open_enter</item>

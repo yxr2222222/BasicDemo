@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tvUrl"
+    android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:padding="8dp"
+    android:textColor="#0000ff"
+    android:textSize="14sp"
+    tools:text="http://www.baidu.com"
+    android:layout_height="wrap_content">
+
+</TextView>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:binding="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="com.yxr.base.R" />
+
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="com.yxr.base.updater.ui.SimpleUpdaterVM" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black_85000000">
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/ivImage"
+            android:layout_width="@dimen/dp0"
+            android:layout_height="@dimen/dp0"
+            android:layout_marginHorizontal="@dimen/dp24"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toTopOf="@id/llContent"
+            app:layout_constraintDimensionRatio="2:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:riv_corner_radius_top_left="@dimen/dp10"
+            app:riv_corner_radius_top_right="@dimen/dp10"
+            binding:glideImage="@{viewModel.updateChecker.image}"
+            binding:glidePlaceholder="@{R.drawable.bg_base_update}"
+            tools:src="@drawable/bg_base_update" />
+
+        <LinearLayout
+            android:id="@+id/llContent"
+            android:layout_width="@dimen/dp0"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_white_ffffff_bottom_radius10"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/dp16"
+            android:paddingVertical="@dimen/dp24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/ivImage"
+            app:layout_constraintStart_toStartOf="@id/ivImage"
+            app:layout_constraintTop_toBottomOf="@id/ivImage">
+
+            <TextView
+                android:id="@+id/tvVersion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/dp12"
+                android:lineSpacingExtra="@dimen/dp4"
+                android:text="@{viewModel.updateChecker.version}"
+                android:textColor="@color/gray_999999"
+                android:textSize="@dimen/sp14"
+                android:visibility="@{viewModel.updateChecker.version==null?View.GONE:View.VISIBLE}"
+                tools:text="版本号：1.0.0" />
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/dp12"
+                android:text="@{viewModel.updateChecker.title}"
+                android:textColor="@color/black_333333"
+                android:textSize="@dimen/sp18"
+                android:textStyle="bold"
+                android:visibility="@{viewModel.updateChecker.title==null?View.GONE:View.VISIBLE}"
+                tools:text="紧急更新" />
+
+            <TextView
+                android:id="@+id/tvMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lineSpacingExtra="@dimen/dp4"
+                android:text="@{viewModel.updateChecker.message}"
+                android:textColor="@color/gray_999999"
+                android:textSize="@dimen/sp14"
+                android:visibility="@{viewModel.updateChecker.message==null?View.GONE:View.VISIBLE}"
+                tools:text="1. 优化XXX功能;\n2. 修复XXX BUG;\n3. 其他已知问题优化;" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp44"
+                android:layout_marginTop="@dimen/dp24"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvNotNow"
+                    android:layout_width="@dimen/dp0"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="@dimen/dp24"
+                    android:layout_weight="1"
+                    android:background="@drawable/stroke_gray_999999_radius32"
+                    android:gravity="center"
+                    android:onClick="@{viewModel}"
+                    android:text="@{viewModel.notNowBtnText}"
+                    android:textColor="@color/gray_999999"
+                    android:textSize="@dimen/sp16"
+                    android:visibility="@{viewModel.updateChecker.forceUpdate?View.GONE:View.VISIBLE}"
+                    tools:text="@string/update_not_now" />
+
+                <TextView
+                    android:id="@+id/tvUpdate"
+                    android:layout_width="@dimen/dp0"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/stroke_red_ff4620_radius32"
+                    android:gravity="center"
+                    android:onClick="@{viewModel}"
+                    android:text="@{viewModel.updateBtnText}"
+                    android:textColor="@color/red_ff4620"
+                    android:textSize="@dimen/sp16"
+                    android:textStyle="bold"
+                    tools:text="@string/update_now" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

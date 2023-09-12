@@ -7,6 +7,18 @@ import android.view.View
 import androidx.annotation.ColorInt
 import com.yxr.base.widget.CustomClickableSpan
 
+fun String.getSuffix():String{
+    if (this.contains(".")){
+        try {
+            val start = this.lastIndexOf(".")
+            return this.substring(start, this.length)
+        }catch (e:Throwable){
+            e.printStackTrace()
+        }
+    }
+    return ""
+}
+
 fun SpannableString.keywordClickable(
     keyword: String,
     @ColorInt highlightColor: Int = 0xffff5d00.toInt(),

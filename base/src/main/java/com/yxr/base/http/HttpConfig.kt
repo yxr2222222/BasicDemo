@@ -22,13 +22,13 @@ class HttpConfig private constructor(
     /**
      * 超时时长，不是最终的，是每个环节的超时时长
      */
-    var timeout: Long = 10
+    var timeout: Long = 15
         private set
 
     /**
      * 失败重试次数
      */
-    var retryNum: Int = 3
+    var retryNum: Int = 0
         private set
 
     /**
@@ -53,6 +53,12 @@ class HttpConfig private constructor(
      * config callback
      */
     var configCallback: IHttpConfigCallback? = null
+        private set
+
+    /**
+     * baseUrlReplaceConfig
+     */
+    var baseUrlReplaceConfig: BaseUrlReplaceConfig? = null
         private set
 
     /**
@@ -134,6 +140,14 @@ class HttpConfig private constructor(
          */
         fun callback(configCallback: IHttpConfigCallback): Builder {
             httpConfig.configCallback = configCallback
+            return this
+        }
+
+        /**
+         * baseUrlReplaceConfig
+         */
+        fun baseUrlReplaceConfig(baseUrlReplaceConfig: BaseUrlReplaceConfig): Builder {
+            httpConfig.baseUrlReplaceConfig = baseUrlReplaceConfig
             return this
         }
 

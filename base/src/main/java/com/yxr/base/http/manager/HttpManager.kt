@@ -1,10 +1,15 @@
 package com.yxr.base.http.manager
 
+import android.content.Context
 import android.util.Log
+import com.yxr.base.activity.BaseUrlReplaceEditActivity
+import com.yxr.base.extension.startSimpleActivity
 import com.yxr.base.http.HttpConfig
+import com.yxr.base.http.interceptor.BaseUrlReplaceInterceptor
 import com.yxr.base.http.interceptor.CacheInterceptor
 import com.yxr.base.http.interceptor.PublicParamsInterceptor
 import com.yxr.base.http.interceptor.RetryInterceptor
+import com.yxr.base.util.ToastUtil
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -25,8 +30,8 @@ class HttpManager private constructor() {
         private set
 
     companion object {
+        const val TAG = "HttpManager"
         private const val TIME_OUT: Long = 10
-        private const val TAG = "HttpManager"
         private var instance: HttpManager? = null
 
         @JvmStatic
@@ -88,6 +93,11 @@ class HttpManager private constructor() {
             builder.dispatcher(dispatcher)
         }
 
+        // 添加BaseUrl替换拦截器
+        val baseUrlReplaceConfig = httpConfig.baseUrlReplaceConfig
+        if (baseUrlReplaceConfig != null) {
+            builder.addInterceptor(BaseUrlReplaceInterceptor(baseUrlReplaceConfig))
+        }
         // 添加缓存拦截器
         builder.addInterceptor(CacheInterceptor())
         builder.addNetworkInterceptor(CacheInterceptor())
@@ -142,5 +152,17 @@ class HttpManager private constructor() {
             xmlRetrofitMap[dispatcher?.hashCode()] = retrofit
             return retrofit
         }
+    }
+
+    fun startBaseUrlEditActivity(context: Context) {
+        httpConfig.baseUrlReplaceConfig?.let {
+            context.startSimpleActivity(BaseUrlReplaceEditActivity::class.java)
+        } ?: run {
+            ToastUtil.show("请先初始化BaseUrlReplaceConfig")
+        }
+    }
+
+    fun updateDebugUrl(baseUrl: String) {
+        httpConfig.baseUrlReplaceConfig?.updateDebugUrl(baseUrl)
     }
 }

@@ -27,7 +27,7 @@
         android:layout_width="@dimen/dp88"
         android:layout_height="@dimen/dp32"
         android:layout_marginTop="@dimen/dp24"
-        android:background="@drawable/shape_red_ff4620_stroke_radius32"
+        android:background="@drawable/stroke_red_ff4620_radius32"
         android:gravity="center"
         android:text="@string/refresh"
         android:textColor="@color/red_ff4620"

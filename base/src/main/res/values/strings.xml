@@ -20,4 +20,10 @@
     <string name="default_null_body_exception">获取内容为空</string>
     <string name="code_data_parse_exception">数据解析异常</string>
     <string name="code_io_exception">数据流异常</string>
+    <string name="update_now">立即更新</string>
+    <string name="update_not_now">暂不更新</string>
+    <string name="close">关闭</string>
+    <string name="loading">加载中…</string>
+    <string name="install_now">立即安装</string>
+    <string name="downloading_percent_format">下载中(%s)</string>
 </resources>

@@ -51,8 +51,8 @@ class WidgetBinding {
             isNeedDeleteLine: Boolean?,
         ) {
             if (isNeedDeleteLine == true) {
-                //添加删除线
-                textView.paint.flags = Paint.STRIKE_THRU_TEXT_FLAG;
+                // 添加删除线
+                textView.paint.flags = Paint.STRIKE_THRU_TEXT_FLAG
             }
         }
 
@@ -108,7 +108,7 @@ class WidgetBinding {
             "bindingHeight",
             requireAll = false
         )
-        fun bindMargin(
+        fun bindingHeight(
             view: View,
             bindingHeight: Int?
         ) {
@@ -167,7 +167,7 @@ class WidgetBinding {
             requireAll = false
         )
         @JvmStatic
-        fun bindTextViewPadding(
+        fun bindViewPadding(
             view: View,
             bindingPaddingLeft: Float?,
             bindingPaddingTop: Float?,
@@ -183,8 +183,6 @@ class WidgetBinding {
         }
 
         @BindingAdapter(
-            "bindingMarginTop",
-            "bindingMarginBottom",
             "bindingMarginStart",
             "bindingMarginEnd",
             requireAll = false
@@ -192,19 +190,11 @@ class WidgetBinding {
         @JvmStatic
         fun bindingMargin(
             view: View,
-            topMargin: Int?,
-            bottomMargin: Int?,
             startMargin: Int?,
             endMargin: Int?,
         ) {
             val layoutParams = view.layoutParams
             if (layoutParams is ViewGroup.MarginLayoutParams) {
-                if (topMargin != null) {
-                    layoutParams.topMargin = topMargin
-                }
-                if (bottomMargin != null) {
-                    layoutParams.bottomMargin = bottomMargin
-                }
                 if (startMargin != null) {
                     layoutParams.marginStart = startMargin
                 }
