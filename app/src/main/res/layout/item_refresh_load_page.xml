@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.yxr.basicdemo.refershload.RefreshLoadPageAdapterItemBinding" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/dp16">
+
+        <TextView
+            android:textStyle="bold"
+            android:textColor="@color/red_ff4620"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{viewModel.item.text}"
+            android:textSize="@dimen/sp14"
+            tools:text="index: 1, type: normal" />
+
+        <View
+            android:background="@color/white_f2f2f2"
+            android:layout_marginTop="@dimen/dp16"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp0_5"/>
+    </LinearLayout>
+</layout>

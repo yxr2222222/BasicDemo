@@ -5,7 +5,7 @@
 
         <variable
             name="viewModel"
-            type="com.yxr.basicdemo.MainVM" />
+            type="com.yxr.basicdemo.main.MainVM" />
     </data>
 
     <LinearLayout
@@ -29,5 +29,32 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="BaseUrl编辑" />
+
+        <Button
+            android:id="@+id/btnAdapterViewModel"
+            android:onClick="@{viewModel}"
+            android:layout_marginTop="@dimen/dp18"
+            android:textAllCaps="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="AdapterViewModel" />
+
+        <Button
+            android:id="@+id/btnMultAdapterViewModel"
+            android:onClick="@{viewModel}"
+            android:layout_marginTop="@dimen/dp18"
+            android:textAllCaps="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="多样式AdapterViewModel" />
+
+        <Button
+            android:id="@+id/btnPageAdapterViewModel"
+            android:onClick="@{viewModel}"
+            android:layout_marginTop="@dimen/dp18"
+            android:textAllCaps="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="下拉刷新上拉加载更多" />
     </LinearLayout>
 </layout>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:binding="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="com.yxr.base.util.DisplayUtil" />
+
+        <import type="com.yxr.basicdemo.R" />
+
+        <variable
+            name="itemAdapter2"
+            type="com.yxr.basicdemo.adapter.AdapterItemBinding2" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/dp16">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawablePadding="@dimen/dp16"
+            android:gravity="center_vertical"
+            android:text="@{itemAdapter2.item}"
+            android:textColor="@color/default_green"
+            android:textSize="@dimen/sp14"
+            android:textStyle="bold"
+            binding:textDrawableWidth="@{DisplayUtil.dp2px(20)}"
+            binding:textDrawableHeight="@{DisplayUtil.dp2px(20)}"
+            binding:textLeftDrawableRes="@{R.mipmap.ic_launcher}"
+            tools:drawableLeft="@mipmap/ic_launcher"
+            tools:text="index: 1, type: normal" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp0_5"
+            android:layout_marginTop="@dimen/dp16"
+            android:background="@color/white_f2f2f2" />
+    </LinearLayout>
+</layout>

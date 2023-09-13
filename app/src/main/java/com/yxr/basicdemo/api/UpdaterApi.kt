@@ -1,4 +1,4 @@
-package com.yxr.basicdemo
+package com.yxr.basicdemo.api
 
 import com.yxr.basicdemo.model.BaseResponse
 import com.yxr.basicdemo.model.CstUpdateChecker

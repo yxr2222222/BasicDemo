@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:binding="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.yxr.basicdemo.refershload.RefreshLoadPageAdapterVM" />
+    </data>
+
+    <com.yxr.base.widget.refresh.BaseRefreshLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        binding:hasMore="@{viewModel.hasMore}"
+        binding:loadType="@{viewModel.loadType}"
+        binding:refreshLoadMoreListener="@{viewModel}">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            binding:recyclerAdapter="@{viewModel.adapter}"
+            binding:recyclerLayoutManager="@{viewModel.layoutManager}" />
+    </com.yxr.base.widget.refresh.BaseRefreshLayout>
+</layout>

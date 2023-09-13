@@ -1,6 +1,7 @@
-package com.yxr.basicdemo
+package com.yxr.basicdemo.main
 
 import com.yxr.base.activity.BaseActivity
+import com.yxr.basicdemo.R
 import com.yxr.basicdemo.databinding.ActivityMainBinding
 
 
