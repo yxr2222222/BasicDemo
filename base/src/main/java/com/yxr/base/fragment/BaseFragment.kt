@@ -47,6 +47,7 @@ abstract class BaseFragment<T : ViewDataBinding, VM : BaseViewModel> :
         initData()
 
         viewModel.init()
+
         return rootView
     }
 
@@ -90,7 +91,7 @@ abstract class BaseFragment<T : ViewDataBinding, VM : BaseViewModel> :
                         }
                     }
                     loadingDialog?.setCancelable(isLoadingDialogCancelable())
-                    loadingDialog?.show()
+                    if (loadingDialog?.isShowing != true) loadingDialog?.show()
                 } catch (e: Throwable) {
                     e.printStackTrace()
                 }

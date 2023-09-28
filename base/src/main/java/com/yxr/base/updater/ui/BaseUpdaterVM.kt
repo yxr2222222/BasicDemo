@@ -3,34 +3,24 @@ package com.yxr.base.updater.ui
 import android.view.View
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.yxr.base.R
 import com.yxr.base.extension.getSuffix
 import com.yxr.base.extension.resFormat
-import com.yxr.base.http.manager.HttpManager
+import com.yxr.base.http.download.OnDownloadListener
 import com.yxr.base.updater.UpdateChecker
 import com.yxr.base.updater.UpdateType
-import com.yxr.base.updater.api.BaseUpdaterApi
-import com.yxr.base.util.FileUtil
 import com.yxr.base.util.MD5Util
 import com.yxr.base.util.PackageUtil
 import com.yxr.base.util.PathUtil
 import com.yxr.base.vm.BaseViewModel
 import com.yxr.base.web.SimpleWebActivity
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.io.File
-import java.io.FileOutputStream
-import java.io.OutputStream
-import java.lang.RuntimeException
+import kotlin.math.max
 
 abstract class BaseUpdaterVM(lifecycle: LifecycleOwner?) : BaseViewModel(lifecycle) {
     private val appDir = PathUtil.getDir("updater")
-    private var downloadAppJob: Call<ResponseBody>? = null
     val updateChecker = MutableLiveData<UpdateChecker>()
     val updateBtnText = MutableLiveData<String>()
     val notNowBtnText = MutableLiveData<String>()
@@ -75,11 +65,6 @@ abstract class BaseUpdaterVM(lifecycle: LifecycleOwner?) : BaseViewModel(lifecyc
         }
     }
 
-    override fun onDestroy(owner: LifecycleOwner) {
-        releaseDownloadJob()
-        super.onDestroy(owner)
-    }
-
     /**
      * 立即更新
      */
@@ -122,55 +107,21 @@ abstract class BaseUpdaterVM(lifecycle: LifecycleOwner?) : BaseViewModel(lifecyc
      * 下载新版本APP
      */
     private fun downloadNewVersionApp(schemeUrl: String, appFile: File) {
-        if (downloadAppJob != null) return
-
-        onDownloadStart()
-
-        downloadAppJob = createApi(BaseUpdaterApi::class.java).downloadApp(schemeUrl)
-        downloadAppJob?.enqueue(object : Callback<ResponseBody> {
-            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                val body = response.body()
-                if (body == null) {
-                    onFailure(call, RuntimeException("Body is empty!"))
-                    return
-                }
-                viewModelScope.launch(Dispatchers.IO) {
-                    val byteStream = body.byteStream()
-                    val contentLength = body.contentLength()
-                    var os: OutputStream? = null
-                    var currLength = 0L
-                    try {
-                        os = FileOutputStream(appFile)
-                        var len = 0
-                        val buffer = ByteArray(1024)
-                        while (len != -1) {
-                            len = byteStream.read(buffer)
-                            if (len != -1) {
-                                os.write(buffer, 0, len)
-                                currLength += len
-                                launchWithMain {
-                                    onDownloadProgress(currLength * 100 / contentLength)
-                                }
-                            }
-                        }
-
-                        launchWithMain { onDownloadSuccess(appFile) }
-                    } catch (e: Throwable) {
-                        e.printStackTrace()
-                        onFailure(call, e)
-                    } finally {
-                        FileUtil.closeQuietly(byteStream, os)
-                    }
-                }
+        download(schemeUrl, appFile, deleteExists = false, listener = object : OnDownloadListener {
+            override fun onDownloadStart(downloadUrl: String, call: Call<ResponseBody>) {
+                onDownloadStart()
             }
 
-            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                try {
-                    appFile.delete()
-                } catch (e:Throwable){
-                    e.printStackTrace()
-                }
-                launchWithMain { onDownloadFailed(t.message) }
+            override fun onDownloadProgress(downloadUrl: String, progress: Long, total: Long) {
+                onDownloadProgress(progress * 100 / max(1, total))
+            }
+
+            override fun onDownloadSuccess(downloadUrl: String, file: File) {
+                onDownloadSuccess(file)
+            }
+
+            override fun onDownloadFailed(downloadUrl: String, error: String?) {
+                onDownloadFailed(error)
             }
         })
     }
@@ -200,7 +151,6 @@ abstract class BaseUpdaterVM(lifecycle: LifecycleOwner?) : BaseViewModel(lifecyc
     protected open fun onDownloadSuccess(appFile: File) {
         updateBtnText.value = getString(R.string.install_now)
         PackageUtil.installApp(appFile.path)
-        releaseDownloadJob()
     }
 
     /**
@@ -209,23 +159,5 @@ abstract class BaseUpdaterVM(lifecycle: LifecycleOwner?) : BaseViewModel(lifecyc
      */
     protected open fun onDownloadFailed(error: String?) {
         updateBtnText.value = getString(R.string.update_now)
-        releaseDownloadJob()
     }
-
-    /**
-     * 释放下载任务
-     */
-    private fun releaseDownloadJob() {
-        downloadAppJob?.let { downloadAppJob ->
-            if (!downloadAppJob.isCanceled && downloadAppJob.isExecuted) {
-                try {
-                    downloadAppJob.cancel()
-                } catch (e: Throwable) {
-                    e.printStackTrace()
-                }
-            }
-        }
-        downloadAppJob = null
-    }
-
 }

@@ -8,7 +8,6 @@ import com.yxr.base.model.LoadingType
 import com.yxr.base.vm.BasePageAdapterViewModel
 import com.yxr.basicdemo.BR
 import com.yxr.basicdemo.R
-import com.yxr.basicdemo.api.TestApi
 import com.yxr.basicdemo.model.BaseResponse
 import com.yxr.basicdemo.model.PageTestData
 
@@ -20,6 +19,8 @@ class RefreshLoadPageAdapterVM(lifecycle: LifecycleOwner?) :
         R.layout.item_refresh_load_page
     ) {}
     override val viewModelId = BR.viewModel
+
+    override var pageSize = 20
 
     override fun onCreate(owner: LifecycleOwner) {
         super.onCreate(owner)

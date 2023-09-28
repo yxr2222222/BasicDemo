@@ -4,12 +4,16 @@ import android.graphics.Paint
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.databinding.BindingAdapter
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
+import com.makeramen.roundedimageview.RoundedImageView
+import com.yxr.base.widget.TitleBar
 
 class WidgetBinding {
     companion object {
@@ -67,6 +71,48 @@ class WidgetBinding {
         ) {
             backgroundRes?.let {
                 view.setBackgroundResource(it)
+            }
+        }
+
+        @BindingAdapter(
+            "backgroundColor",
+            requireAll = false
+        )
+        @JvmStatic
+        fun bindingBackgroundColor(
+            view: View,
+            @ColorInt backgroundColor: Int?,
+        ) {
+            backgroundColor?.let {
+                view.setBackgroundColor(it)
+            }
+        }
+
+        @BindingAdapter(
+            "bindingTextSize",
+            requireAll = false
+        )
+        @JvmStatic
+        fun bindingTextSize(
+            view: TextView,
+            bindingTextSize: Float?,
+        ) {
+            bindingTextSize?.let {
+                view.textSize = bindingTextSize
+            }
+        }
+
+        @BindingAdapter(
+            "bindingBorderColor",
+            requireAll = false
+        )
+        @JvmStatic
+        fun bindingBorderColor(
+            view: RoundedImageView,
+            @ColorInt bindingBorderColor: Int?,
+        ) {
+            bindingBorderColor?.let {
+                view.borderColor = it
             }
         }
 
@@ -133,23 +179,23 @@ class WidgetBinding {
         )
         fun bindMargin(
             view: View,
-            marginLeft: Float?,
-            marginTop: Float?,
-            marginRight: Float?,
-            marginBottom: Float?,
+            marginLeft: Int?,
+            marginTop: Int?,
+            marginRight: Int?,
+            marginBottom: Int?,
         ) {
             (view.layoutParams as? ViewGroup.MarginLayoutParams)?.let { params ->
                 if (marginLeft != null) {
-                    params.leftMargin = marginLeft.toInt()
+                    params.leftMargin = marginLeft
                 }
                 if (marginTop != null) {
-                    params.topMargin = marginTop.toInt()
+                    params.topMargin = marginTop
                 }
                 if (marginRight != null) {
-                    params.rightMargin = marginRight.toInt()
+                    params.rightMargin = marginRight
                 }
                 if (marginBottom != null) {
-                    params.bottomMargin = marginBottom.toInt()
+                    params.bottomMargin = marginBottom
                 }
                 view.layoutParams = params
             }
@@ -169,16 +215,16 @@ class WidgetBinding {
         @JvmStatic
         fun bindViewPadding(
             view: View,
-            bindingPaddingLeft: Float?,
-            bindingPaddingTop: Float?,
-            bindingPaddingRight: Float?,
-            bindingPaddingBottom: Float?,
+            bindingPaddingLeft: Int?,
+            bindingPaddingTop: Int?,
+            bindingPaddingRight: Int?,
+            bindingPaddingBottom: Int?,
         ) {
             view.setPadding(
-                bindingPaddingLeft?.toInt() ?: view.paddingLeft,
-                bindingPaddingTop?.toInt() ?: view.paddingTop,
-                bindingPaddingRight?.toInt() ?: view.paddingRight,
-                bindingPaddingBottom?.toInt() ?: view.paddingBottom,
+                bindingPaddingLeft ?: view.paddingLeft,
+                bindingPaddingTop ?: view.paddingTop,
+                bindingPaddingRight ?: view.paddingRight,
+                bindingPaddingBottom ?: view.paddingBottom,
             )
         }
 
@@ -203,6 +249,33 @@ class WidgetBinding {
                 }
                 view.layoutParams = layoutParams
             }
+        }
+
+        @BindingAdapter(
+            "titleBarTitle",
+            requireAll = false
+        )
+        @JvmStatic
+        fun bindingTitleBarTitle(
+            view: TitleBar,
+            titleBarTitle: CharSequence?
+        ) {
+            view.setTitle(titleBarTitle)
+        }
+
+        @BindingAdapter(
+            "bindingProgress",
+            "bindingMax",
+            requireAll = false
+        )
+        @JvmStatic
+        fun bindingProgressMax(
+            view: ProgressBar,
+            bindingProgress: Int?,
+            bindingMax: Int?,
+        ) {
+            bindingMax?.let { view.max = bindingMax }
+            bindingProgress?.let { view.progress = bindingProgress }
         }
     }
 }

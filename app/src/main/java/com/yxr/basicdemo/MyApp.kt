@@ -4,6 +4,7 @@ import android.util.Log
 import com.yxr.base.BaseApplication
 import com.yxr.base.http.BaseUrlReplaceConfig
 import com.yxr.base.http.HttpConfig
+import com.yxr.base.http.cache.CacheConfig
 import com.yxr.base.http.callback.IHttpConfigCallback
 import com.yxr.base.http.callback.OnBaseUrlReplaceCallback
 import com.yxr.base.http.manager.HttpManager
@@ -27,7 +28,7 @@ class MyApp : BaseApplication() {
             // 设置网络请求失败重试次数，默认0
             .retryNum(0)
             // 设置缓存，不需要可不设置
-            .cache(Cache(PathUtil.getDir("/http-cache"), maxSize = 1024 * 1024 * 1024))
+            .cache(CacheConfig(PathUtil.getDir("/http-cache"), maxSize = 1024 * 1024 * 1024))
             // 添加拦截器，不需要可不设置
             .addInterceptor { chain -> chain.proceed(chain.request()) }
             // 设置网络环境切换配置，不需要可不设置

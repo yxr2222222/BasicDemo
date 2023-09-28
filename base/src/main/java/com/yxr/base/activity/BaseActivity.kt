@@ -113,7 +113,8 @@ abstract class BaseActivity<T : ViewDataBinding, VM : BaseViewModel> : AppCompat
                     }
                 }
                 loadingDialog?.setCancelable(isLoadingDialogCancelable())
-                loadingDialog?.show()
+
+                if (loadingDialog?.isShowing != true) loadingDialog?.show()
             } catch (e: Throwable) {
                 e.printStackTrace()
             }

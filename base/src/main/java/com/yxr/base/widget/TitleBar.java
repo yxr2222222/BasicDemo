@@ -139,6 +139,10 @@ public class TitleBar extends ViewGroup implements View.OnClickListener {
         mLeftImageView.setOnClickListener(l);
     }
 
+    public ImageView getLeftImageView() {
+        return mLeftImageView;
+    }
+
     public void setLeftVisible(boolean visible) {
         mLeftImageView.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
@@ -333,7 +337,6 @@ public class TitleBar extends ViewGroup implements View.OnClickListener {
             view = text;
         }
 
-        view.setPadding(mActionPadding, mActionPadding, mOutPadding * 2, mActionPadding);
         view.setTag(action);
         view.setOnClickListener(this);
         return view;

@@ -92,7 +92,7 @@ abstract class BaseDialogFragment<T : ViewDataBinding, VM : BaseViewModel> : Dia
                         }
                     }
                     loadingDialog?.setCancelable(isLoadingDialogCancelable())
-                    loadingDialog?.show()
+                    if (loadingDialog?.isShowing != true) loadingDialog?.show()
                 } catch (e: Throwable) {
                     e.printStackTrace()
                 }

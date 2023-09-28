@@ -7,14 +7,20 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.yxr.base.R
 import com.yxr.base.http.HttpErrorCode
+import com.yxr.base.http.download.DownloadUtil
+import com.yxr.base.http.download.OnDownloadListener
 import com.yxr.base.http.extension.launchRequest
 import com.yxr.base.http.manager.HttpManager
+import com.yxr.base.http.model.CstServiceException
 import com.yxr.base.http.model.IResponse
 import com.yxr.base.http.model.NetworkException
 import com.yxr.base.http.util.NetworkExceptionUtil
 import com.yxr.base.model.LoadingOb
 import kotlinx.coroutines.*
 import okhttp3.Dispatcher
+import okhttp3.ResponseBody
+import retrofit2.Call
+import java.io.File
 
 /**
  * @author ciba
@@ -34,10 +40,23 @@ abstract class BaseViewModel(lifecycle: LifecycleOwner?) : AbsViewModel(lifecycl
     val finishOb = MutableLiveData<Boolean>()
     val dismissFragmentOb = MutableLiveData<Boolean>()
 
+    private val downloadJobMap = hashMapOf<String, Call<ResponseBody>>()
     private var preClickTime = 0L
     private var preClickView: Int? = null
 
     open fun onBackPressed() = true
+
+    override fun onDestroy(owner: LifecycleOwner) {
+        downloadJobMap.forEach { entry ->
+            cancelDownloadJob(
+                downloadUrl = entry.key,
+                removeFromMap = false,
+                call = entry.value
+            )
+        }
+        downloadJobMap.clear()
+        super.onDestroy(owner)
+    }
 
     final override fun onClick(v: View) {
         val currentTimeMillis = System.currentTimeMillis()
@@ -60,9 +79,8 @@ abstract class BaseViewModel(lifecycle: LifecycleOwner?) : AbsViewModel(lifecycl
      */
     open fun <T : Any> createApi(
         cls: Class<T>,
-        dispatcher: Dispatcher? = null,
-        isJson: Boolean = true
-    ): T = HttpManager.get().createApi(cls, dispatcher, isJson)
+        dispatcher: Dispatcher? = null
+    ): T = HttpManager.get().createApi(cls, dispatcher)
 
     /**
      * 快捷请求
@@ -97,7 +115,7 @@ abstract class BaseViewModel(lifecycle: LifecycleOwner?) : AbsViewModel(lifecycl
                 }
                 if (!isErrorCallback) {
                     isErrorCallback = true
-                    onError(NetworkException(HttpErrorCode.CODE_NULL_DATA, error))
+                    onError(CstServiceException(HttpErrorCode.CODE_NULL_DATA, error))
                 }
             } else if (!data.isSuccess()) {
                 val error = data.error()
@@ -107,7 +125,7 @@ abstract class BaseViewModel(lifecycle: LifecycleOwner?) : AbsViewModel(lifecycl
                 }
                 if (!isErrorCallback) {
                     isErrorCallback = true
-                    onError(NetworkException(data.code() ?: HttpErrorCode.CODE_UNKNOWN, error))
+                    onError(CstServiceException(data.code() ?: HttpErrorCode.CODE_UNKNOWN, error))
                 }
 
                 val httpConfig = HttpManager.get().httpConfig
@@ -198,6 +216,48 @@ abstract class BaseViewModel(lifecycle: LifecycleOwner?) : AbsViewModel(lifecycl
     }
 
     /**
+     * 下载文件
+     * @param downloadUrl 需要下载的地址
+     * @param targetFile 需要存储到的文件
+     * @param deleteExists 如果文件存在了，是否需要删除重新下载
+     * @param listener 下载监听
+     */
+    open fun download(
+        downloadUrl: String,
+        targetFile: File,
+        deleteExists: Boolean = false,
+        listener: OnDownloadListener? = null
+    ) {
+        val call = downloadJobMap[downloadUrl]
+        if (call != null) return
+        DownloadUtil.downloadFile(
+            viewModelScope,
+            downloadUrl,
+            targetFile,
+            deleteExists,
+            object : OnDownloadListener {
+                override fun onDownloadStart(downloadUrl: String, call: Call<ResponseBody>) {
+                    downloadJobMap[downloadUrl] = call
+                    listener?.onDownloadStart(downloadUrl, call)
+                }
+
+                override fun onDownloadProgress(downloadUrl: String, progress: Long, total: Long) {
+                    listener?.onDownloadProgress(downloadUrl, progress, total)
+                }
+
+                override fun onDownloadSuccess(downloadUrl: String, file: File) {
+                    cancelDownloadJob(downloadUrl)
+                    listener?.onDownloadSuccess(downloadUrl, file)
+                }
+
+                override fun onDownloadFailed(downloadUrl: String, error: String?) {
+                    cancelDownloadJob(downloadUrl)
+                    listener?.onDownloadFailed(downloadUrl, error)
+                }
+            })
+    }
+
+    /**
      * 双击事件
      */
     protected open fun onDoubleClick(v: View?) {
@@ -209,6 +269,26 @@ abstract class BaseViewModel(lifecycle: LifecycleOwner?) : AbsViewModel(lifecycl
      */
     protected open fun onSingleClick(v: View?) {
 
+    }
+
+    protected open fun cancelDownloadJob(
+        downloadUrl: String,
+        removeFromMap: Boolean = true,
+        call: Call<ResponseBody>? = null
+    ) {
+        val downloadJob = call ?: downloadJobMap[downloadUrl]
+        downloadJob?.let { downloadAppJob ->
+            if (!downloadAppJob.isCanceled && downloadAppJob.isExecuted) {
+                try {
+                    downloadAppJob.cancel()
+                } catch (e: Throwable) {
+                    e.printStackTrace()
+                }
+            }
+        }
+        if (removeFromMap) {
+            downloadJobMap.remove(downloadUrl)
+        }
     }
 }
 

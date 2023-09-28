@@ -5,8 +5,9 @@ import android.util.Log
 import com.yxr.base.activity.BaseUrlReplaceEditActivity
 import com.yxr.base.extension.startSimpleActivity
 import com.yxr.base.http.HttpConfig
+import com.yxr.base.http.cache.CacheImp
+import com.yxr.base.http.cache.NetCacheInterceptor
 import com.yxr.base.http.interceptor.BaseUrlReplaceInterceptor
-import com.yxr.base.http.interceptor.CacheInterceptor
 import com.yxr.base.http.interceptor.PublicParamsInterceptor
 import com.yxr.base.http.interceptor.RetryInterceptor
 import com.yxr.base.util.ToastUtil
@@ -16,7 +17,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 import java.util.concurrent.TimeUnit
 
 /**
@@ -47,8 +47,7 @@ class HttpManager private constructor() {
         }
     }
 
-    private val jsonRetrofitMap = HashMap<Int?, Retrofit>()
-    private val xmlRetrofitMap = HashMap<Int?, Retrofit>()
+    private val retrofitMap = HashMap<Int?, Retrofit>()
     private val apiClassMap = HashMap<String, Any>()
 
     /**
@@ -62,31 +61,26 @@ class HttpManager private constructor() {
 
     fun <T : Any> createApi(
         cls: Class<T>,
-        dispatcher: Dispatcher? = null,
-        isJson: Boolean = true
+        dispatcher: Dispatcher? = null
     ): T {
         val apiKey = cls.name + dispatcher.hashCode()
         var api = apiClassMap[apiKey]
         if (api == null) {
-            api = getRetrofit(dispatcher, isJson).create(cls)
+            api = getRetrofit(dispatcher).create(cls)
             apiClassMap[apiKey] = api
         }
         return api as T
     }
 
-    fun getRetrofit(dispatcher: Dispatcher? = null, isJson: Boolean = true): Retrofit {
-        return if (isJson) {
-            jsonRetrofitMap[dispatcher?.hashCode()] ?: createRetrofit(dispatcher, true)
-        } else {
-            xmlRetrofitMap[dispatcher?.hashCode()] ?: createRetrofit(dispatcher, false)
-        }
+    fun getRetrofit(dispatcher: Dispatcher? = null): Retrofit {
+        return retrofitMap[dispatcher?.hashCode()] ?: createRetrofit(dispatcher)
     }
 
     /**
      * 创建Retrofit
      */
-    private fun createRetrofit(dispatcher: Dispatcher?, isJson: Boolean): Retrofit {
-        val builder = OkHttpClient().newBuilder().cache(httpConfig.cache)
+    private fun createRetrofit(dispatcher: Dispatcher?): Retrofit {
+        val builder = OkHttpClient().newBuilder()
 
         // 设置调度器
         if (dispatcher != null) {
@@ -98,9 +92,10 @@ class HttpManager private constructor() {
         if (baseUrlReplaceConfig != null) {
             builder.addInterceptor(BaseUrlReplaceInterceptor(baseUrlReplaceConfig))
         }
-        // 添加缓存拦截器
-        builder.addInterceptor(CacheInterceptor())
-        builder.addNetworkInterceptor(CacheInterceptor())
+        httpConfig.cache?.let { cacheConfig ->
+            // 添加缓存拦截器
+            builder.addInterceptor(NetCacheInterceptor(CacheImp(cacheConfig)))
+        }
         // 添加公共参数拦截器
         builder.addInterceptor(PublicParamsInterceptor())
         // 添加重试拦截器
@@ -133,25 +128,14 @@ class HttpManager private constructor() {
         }
 
         val client: OkHttpClient = builder.build()
-        if (isJson) {
-            val retrofit = Retrofit.Builder()
-                .client(client)
-                .baseUrl(httpConfig.baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .build()
-            jsonRetrofitMap[dispatcher?.hashCode()] = retrofit
-            return retrofit
-        } else {
-            val retrofit = Retrofit.Builder()
-                .client(client)
-                .baseUrl(httpConfig.baseUrl)
-                .addConverterFactory(SimpleXmlConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .build()
-            xmlRetrofitMap[dispatcher?.hashCode()] = retrofit
-            return retrofit
-        }
+        val retrofit = Retrofit.Builder()
+            .client(client)
+            .baseUrl(httpConfig.baseUrl)
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .build()
+        retrofitMap[dispatcher?.hashCode()] = retrofit
+        return retrofit
     }
 
     fun startBaseUrlEditActivity(context: Context) {

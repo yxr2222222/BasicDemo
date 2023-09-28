@@ -16,6 +16,14 @@ class MMKVUtil {
             getMMKV().getString(key, defaultValue)
 
         @JvmStatic
+        fun putInt(key: String, value: Int) {
+            getMMKV().putInt(key, value)
+        }
+
+        @JvmStatic
+        fun getInt(key: String, defaultValue: Int) = getMMKV().getInt(key, defaultValue)
+
+        @JvmStatic
         fun putLong(key: String, value: Long) {
             getMMKV().putLong(key, value)
         }

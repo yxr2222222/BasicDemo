@@ -10,7 +10,7 @@ import com.yxr.base.util.PathUtil.Companion.getFilePath
 import java.io.*
 
 class FileUtil {
-    companion object{
+    companion object {
         /**
          * 快速关闭Closeable
          *
@@ -196,7 +196,7 @@ class FileUtil {
          * @return 文件内容
          */
         @JvmStatic
-        fun readFile(filePath: String): String? {
+        fun readFile(filePath: String): String {
             val sb = StringBuilder("")
             val file = File(filePath)
             //打开文件输入流

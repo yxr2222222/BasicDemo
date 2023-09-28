@@ -80,9 +80,8 @@ abstract class BaseService : Service() {
      */
     private fun <T : Any> createApi(
         cls: Class<T>,
-        dispatcher: Dispatcher? = null,
-        isJson: Boolean = true
-    ): T = HttpManager.get().createApi(cls, dispatcher, isJson)
+        dispatcher: Dispatcher? = null
+    ): T = HttpManager.get().createApi(cls, dispatcher)
 
     /**
      * 快捷请求

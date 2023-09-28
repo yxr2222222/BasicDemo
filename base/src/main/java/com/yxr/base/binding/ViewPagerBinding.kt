@@ -13,5 +13,16 @@ class ViewPagerBinding {
                 viewPager.adapter = adapter
             }
         }
+
+        @BindingAdapter(value = ["viewPagerCallback"], requireAll = false)
+        @JvmStatic
+        fun bindingViewPagerFragmentAdapter(
+            viewPager: ViewPager2,
+            viewPagerCallback: ViewPager2.OnPageChangeCallback?
+        ) {
+            viewPagerCallback?.let {
+                viewPager.registerOnPageChangeCallback(viewPagerCallback)
+            }
+        }
     }
 }

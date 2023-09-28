@@ -1,6 +1,7 @@
 package com.yxr.base.http
 
 import android.annotation.SuppressLint
+import com.yxr.base.http.cache.CacheConfig
 import com.yxr.base.http.callback.IHttpConfigCallback
 import okhttp3.Cache
 import okhttp3.Interceptor
@@ -34,7 +35,7 @@ class HttpConfig private constructor(
     /**
      * 缓存
      */
-    var cache: Cache? = null
+    var cache: CacheConfig? = null
         private set
 
     /**
@@ -112,7 +113,7 @@ class HttpConfig private constructor(
          *
          * @param cache 缓存
          */
-        fun cache(cache: Cache): Builder {
+        fun cache(cache: CacheConfig): Builder {
             httpConfig.cache = cache
             return this
         }
