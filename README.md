@@ -244,6 +244,7 @@ private fun downloadFile(downloadUrl: String) {
 
             override fun onDownloadSuccess(downloadUrl: String, file: File) {
                 // TODO 文件下载成功
+                dismissLoading()
             }
 
             override fun onDownloadFailed(downloadUrl: String, error: String?) {
