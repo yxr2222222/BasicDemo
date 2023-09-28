@@ -176,19 +176,19 @@ class MyApp : BaseApplication() {
                 }
             })
             .build())
-            // 设置网络配置回调，不需要可不设置
-            .callback(object : IHttpConfigCallback {
-                override fun getPublicHeaders(httpUrl: HttpUrl): MutableMap<String, String> {
-                    return headers
-                }
+        // 设置网络配置回调，不需要可不设置
+        .callback(object : IHttpConfigCallback {
+            override fun getPublicHeaders(httpUrl: HttpUrl): MutableMap<String, String> {
+                return headers
+            }
 
-                override fun onGlobalError(code: Int) {
+            override fun onGlobalError(code: Int) {
 
-                }
-            })
-            .build()
-        }
+            }
+        })
+        .build()
     }
+}
 ```
 
 
@@ -205,11 +205,11 @@ class MyApp : BaseApplication() {
 #### [应用内更新](./app/src/main/java/com/yxr/basicdemo/main/MainVM.kt)
 ```java
 UpdateManager.instance.checkUpdate(
-        createApi(UpdaterApi::class.java).checkUpdate(
-                machine = MachineUtil.getDeviceId(),
-                version = PackageUtil.getVersionName(),
-                packageName = PackageUtil.getPackageName()
-        ), listener = null
+    createApi(UpdaterApi::class.java).checkUpdate(
+        machine = MachineUtil.getDeviceId(),
+        version = PackageUtil.getVersionName(),
+        packageName = PackageUtil.getPackageName()
+    ), listener = null
 )
 ```
 
