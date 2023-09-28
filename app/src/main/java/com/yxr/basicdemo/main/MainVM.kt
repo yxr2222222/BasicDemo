@@ -13,6 +13,7 @@ import com.yxr.basicdemo.api.UpdaterApi
 import com.yxr.basicdemo.adapter.AdapterViewModelActivity
 import com.yxr.basicdemo.adapter.MultAdapterViewModelActivity
 import com.yxr.basicdemo.refershload.RefreshLoadPageAdapterActivity
+import com.yxr.basicdemo.status.StatusDemoActivity
 
 class MainVM(lifecycle: LifecycleOwner?) : BaseViewModel(lifecycle) {
     override val viewModelId = BR.viewModel
@@ -24,6 +25,7 @@ class MainVM(lifecycle: LifecycleOwner?) : BaseViewModel(lifecycle) {
             R.id.btnAdapterViewModel -> startSimpleActivity(AdapterViewModelActivity::class.java)
             R.id.btnMultAdapterViewModel -> startSimpleActivity(MultAdapterViewModelActivity::class.java)
             R.id.btnPageAdapterViewModel -> startSimpleActivity(RefreshLoadPageAdapterActivity::class.java)
+            R.id.btnStatus -> startSimpleActivity(StatusDemoActivity::class.java)
         }
     }
 

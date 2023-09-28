@@ -31,6 +31,14 @@
             android:text="BaseUrl编辑" />
 
         <Button
+            android:id="@+id/btnStatus"
+            android:onClick="@{viewModel}"
+            android:layout_marginTop="@dimen/dp18"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="多状态页面" />
+
+        <Button
             android:id="@+id/btnAdapterViewModel"
             android:onClick="@{viewModel}"
             android:layout_marginTop="@dimen/dp18"

@@ -195,12 +195,23 @@ class MyApp : BaseApplication() {
 
 #### MVVM
 
-1. **BaseActivity、BaseFragment、BaseDialogFragment**：基本的Activity、Fragment、DialogFragment；
-2. **BaseStatusActivity、BaseStatusFragment、BaseStatusDialogFragment**：继承自上诉BaseXXX，是带有多状态UI和TitleBar的基类，其中多状态包括：加载中状态、内容状态、错误状态、空页面状态；
-3. **BaseViewModel**：继承自AbsViewModel，接入了lifecycle管理生命周期，功能包含了：权限申请、Loading弹框、安全Toast、网络请求、线程切换、单击双击监听登；
-4. **BaseStatusViewModel**：继承自BaseViewModel，多了多状态切换、重新加载功能；
-5. **BaseAdapterViewModel**：继承自BaseStatusViewModel，配合BaseMultiItemQuickAdapter，快速实现列表功能；
-6. **BasePageAdapterViewModel**：继承自BaseAdapterViewModel，配合SmartRefreshLayout快速实现下拉刷新、下拉加载、分页加载的列表功能；
+1. **BaseActivity、BaseFragment、BaseDialogFragment**：基本的Activity、Fragment、DialogFragment；[Demo](./app/src/main/java/com/yxr/basicdemo/main/MainActivity.kt)
+2. **BaseStatusActivity、BaseStatusFragment、BaseStatusDialogFragment**：继承自上诉BaseXXX，是带有多状态UI和TitleBar的基类，其中多状态包括：加载中状态、内容状态、错误状态、空页面状态；[Demo](./app/src/main/java/com/yxr/basicdemo/status/StatusDemoActivity.kt)
+3. **BaseViewModel**：继承自AbsViewModel，接入了lifecycle管理生命周期，功能包含了：权限申请、Loading弹框、安全Toast、网络请求、线程切换、单击双击监听登；[Demo](./app/src/main/java/com/yxr/basicdemo/main/MainVM.kt)
+4. **BaseStatusViewModel**：继承自BaseViewModel，多了多状态切换、重新加载功能；[Demo](./app/src/main/java/com/yxr/basicdemo/status/StatusDemoVM.kt)
+5. **BaseAdapterViewModel**：继承自BaseStatusViewModel，配合BaseMultiItemQuickAdapter，快速实现列表功能；[Demo](./app/src/main/java/com/yxr/basicdemo/adapter)
+6. **BasePageAdapterViewModel**：继承自BaseAdapterViewModel，配合SmartRefreshLayout快速实现下拉刷新、下拉加载、分页加载的列表功能；[Demo](./app/src/main/java/com/yxr/basicdemo/refershload)
+
+#### [应用内更新](./app/src/main/java/com/yxr/basicdemo/main/MainVM.kt)
+```java
+UpdateManager.instance.checkUpdate(
+            createApi(UpdaterApi::class.java).checkUpdate(
+                machine = MachineUtil.getDeviceId(),
+                version = PackageUtil.getVersionName(),
+                packageName = PackageUtil.getPackageName()
+            ), listener = null
+        )
+```
 
 
 

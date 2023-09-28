@@ -7,6 +7,13 @@ class BaseResponse<T> : IResponse<T> {
     companion object {
         const val SUCCESS = 200
 
+        fun <T> createFailedResp(message: String?): BaseResponse<T> {
+            val resp = BaseResponse<T>()
+            resp.code = -1
+            resp.message = message
+            return resp
+        }
+
         fun <T> createSuccessResp(data: T?): BaseResponse<T> {
             val resp = BaseResponse<T>()
             resp.code = SUCCESS

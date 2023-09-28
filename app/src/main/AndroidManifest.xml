@@ -24,6 +24,7 @@
         <activity android:name=".adapter.AdapterViewModelActivity" />
         <activity android:name=".adapter.MultAdapterViewModelActivity" />
         <activity android:name=".refershload.RefreshLoadPageAdapterActivity" />
+        <activity android:name=".status.StatusDemoActivity" />
     </application>
 
 </manifest>
