@@ -228,7 +228,7 @@ private fun downloadFile(downloadUrl: String) {
     if (downloadUrl.isBlank()) return
     val bibleId = item.id?.toIntOrNull() ?: return
 
-    val targetFile = File(PathUtil.getDir("/Download/Bible"), MD5Util.md5(downloadUrl) + ".txt")
+    val targetFile = File(PathUtil.getDir("/Download"), MD5Util.md5(downloadUrl) + ".txt")
 
     download(
         downloadUrl,
