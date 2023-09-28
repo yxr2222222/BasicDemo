@@ -109,32 +109,30 @@
 #### Module的gradle完善
 
 ```java
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
-  
-android {
-  	...
-  	 buildFeatures {
+apply plugin:'kotlin-android'
+        apply plugin:'kotlin-kapt'
+
+        android{
+        ...
+        buildFeatures{
         viewBinding true
         dataBinding true
-    }
-  
-  	compileOptions {
+        }
+
+        compileOptions{
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-    }
-    ...
-}
+        }
+        ...
+        }
 
 ```
-
-
 
 #### BaseApplication
 
 使用该基础框架时必须继承BaseApplication
 
-```java
+```kotlin
 class MyApp : BaseApplication() {
     companion object {
         val headers = mutableMapOf("os" to "Android", "version" to "1.0")
@@ -155,55 +153,65 @@ class MyApp : BaseApplication() {
             // 添加拦截器，不需要可不设置
             .addInterceptor { chain -> chain.proceed(chain.request()) }
             // 设置网络环境切换配置，不需要可不设置
-            .baseUrlReplaceConfig(BaseUrlReplaceConfig.Builder()
-            // 测试环境地址
-            .debugBaseUrl("http://192.168.2.42:7722")
-            // 正式环境地址
-            .formalBaseUrl("http://192.168.2.42:7722")
-            // 其他地址，没啥作用，用来切换界面快速切换的，可设置多个
-            .otherBaseUrl("https://www.baidu.com")
-            // 其他地址，没啥作用，用来切换界面快速切换的，可设置多个
-            .otherBaseUrl("https://github.com/")
-            .onBaseUrlReplaceCallback(object :OnBaseUrlReplaceCallback{
-                override fun getCustomFormalBaseUrl(): String? {
-                    // 获取自定义的正式环境的BaseUrl，返回空的或者不是网络地址将使用@{@link com.yxr.base.http.BaseUrlReplaceConfig}的formalBaseUrl
-                    return null
+            .baseUrlReplaceConfig(
+                BaseUrlReplaceConfig.Builder()
+                    // 测试环境地址
+                    .debugBaseUrl("http://192.168.2.42:7722")
+                    // 正式环境地址
+                    .formalBaseUrl("http://192.168.2.42:7722")
+                    // 其他地址，没啥作用，用来切换界面快速切换的，可设置多个
+                    .otherBaseUrl("https://www.baidu.com")
+                    // 其他地址，没啥作用，用来切换界面快速切换的，可设置多个
+                    .otherBaseUrl("https://github.com/")
+                    .onBaseUrlReplaceCallback(object : OnBaseUrlReplaceCallback {
+                        override fun getCustomFormalBaseUrl(): String? {
+                            // 获取自定义的正式环境的BaseUrl，返回空的或者不是网络地址将使用@{@link com.yxr.base.http.BaseUrlReplaceConfig}的formalBaseUrl
+                            return null
+                        }
+
+                        override fun onBaseUrlReplace(oldHost: String?, newHost: String?) {
+                            // BaseUrl被替换了
+                            Log.d(
+                                HttpManager.TAG,
+                                "onBaseUrlReplace oldHost: $oldHost, newHost: $newHost"
+                            )
+                        }
+                    })
+                    .build()
+            )
+            // 设置网络配置回调，不需要可不设置
+            .callback(object : IHttpConfigCallback {
+                override fun getPublicHeaders(httpUrl: HttpUrl): MutableMap<String, String> {
+                    return headers
                 }
 
-                override fun onBaseUrlReplace(oldHost: String?, newHost: String?) {
-                    // BaseUrl被替换了
-                    Log.d(HttpManager.TAG, "onBaseUrlReplace oldHost: $oldHost, newHost: $newHost")
+                override fun onGlobalError(code: Int) {
+
                 }
             })
-            .build())
-        // 设置网络配置回调，不需要可不设置
-        .callback(object : IHttpConfigCallback {
-            override fun getPublicHeaders(httpUrl: HttpUrl): MutableMap<String, String> {
-                return headers
-            }
-
-            override fun onGlobalError(code: Int) {
-
-            }
-        })
-        .build()
+            .build()
     }
 }
 ```
 
-
-
 #### MVVM
 
-1. **BaseActivity、BaseFragment、BaseDialogFragment**：基本的Activity、Fragment、DialogFragment；[Demo](./app/src/main/java/com/yxr/basicdemo/main/MainActivity.kt)
-2. **BaseStatusActivity、BaseStatusFragment、BaseStatusDialogFragment**：继承自上诉BaseXXX，是带有多状态UI和TitleBar的基类，其中多状态包括：加载中状态、内容状态、错误状态、空页面状态；[Demo](./app/src/main/java/com/yxr/basicdemo/status/StatusDemoActivity.kt)
-3. **BaseViewModel**：继承自AbsViewModel，接入了lifecycle管理生命周期，功能包含了：权限申请、Loading弹框、安全Toast、网络请求、线程切换、单击双击监听登；[Demo](./app/src/main/java/com/yxr/basicdemo/main/MainVM.kt)
-4. **BaseStatusViewModel**：继承自BaseViewModel，多了多状态切换、重新加载功能；[Demo](./app/src/main/java/com/yxr/basicdemo/status/StatusDemoVM.kt)
-5. **BaseAdapterViewModel**：继承自BaseStatusViewModel，配合BaseMultiItemQuickAdapter，快速实现列表功能；[Demo](./app/src/main/java/com/yxr/basicdemo/adapter)
-6. **BasePageAdapterViewModel**：继承自BaseAdapterViewModel，配合SmartRefreshLayout快速实现下拉刷新、下拉加载、分页加载的列表功能；[Demo](./app/src/main/java/com/yxr/basicdemo/refershload)
+1. **BaseActivity、BaseFragment、BaseDialogFragment**
+   ：基本的Activity、Fragment、DialogFragment；[Demo](./app/src/main/java/com/yxr/basicdemo/main/MainActivity.kt)
+2. **BaseStatusActivity、BaseStatusFragment、BaseStatusDialogFragment**
+   ：继承自上诉BaseXXX，是带有多状态UI和TitleBar的基类，其中多状态包括：加载中状态、内容状态、错误状态、空页面状态；[Demo](./app/src/main/java/com/yxr/basicdemo/status/StatusDemoActivity.kt)
+3. **BaseViewModel**
+   ：继承自AbsViewModel，接入了lifecycle管理生命周期，功能包含了：权限申请、Loading弹框、安全Toast、网络请求、线程切换、单击双击监听登；[Demo](./app/src/main/java/com/yxr/basicdemo/main/MainVM.kt)
+4. **BaseStatusViewModel**
+   ：继承自BaseViewModel，多了多状态切换、重新加载功能；[Demo](./app/src/main/java/com/yxr/basicdemo/status/StatusDemoVM.kt)
+5. **BaseAdapterViewModel**
+   ：继承自BaseStatusViewModel，配合BaseMultiItemQuickAdapter，快速实现列表功能；[Demo](./app/src/main/java/com/yxr/basicdemo/adapter)
+6. **BasePageAdapterViewModel**
+   ：继承自BaseAdapterViewModel，配合SmartRefreshLayout快速实现下拉刷新、下拉加载、分页加载的列表功能；[Demo](./app/src/main/java/com/yxr/basicdemo/refershload)
 
 #### [应用内更新](./app/src/main/java/com/yxr/basicdemo/main/MainVM.kt)
-```java
+
+```kotlin
 UpdateManager.instance.checkUpdate(
     createApi(UpdaterApi::class.java).checkUpdate(
         machine = MachineUtil.getDeviceId(),
@@ -211,6 +219,39 @@ UpdateManager.instance.checkUpdate(
         packageName = PackageUtil.getPackageName()
     ), listener = null
 )
+```
+
+#### [文件下载]
+
+```kotlin
+private fun downloadFile(downloadUrl: String) {
+    if (downloadUrl.isBlank()) return
+    val bibleId = item.id?.toIntOrNull() ?: return
+
+    val targetFile = File(PathUtil.getDir("/Download/Bible"), MD5Util.md5(downloadUrl) + ".txt")
+
+    download(
+        downloadUrl,
+        targetFile,
+        deleteExists = true,
+        listener = object : OnDownloadListener {
+            override fun onDownloadStart(downloadUrl: String, call: Call<ResponseBody>) {
+                showLoading(getString(R.string.downloading))
+            }
+
+            override fun onDownloadProgress(downloadUrl: String, progress: Long, total: Long) {
+            }
+
+            override fun onDownloadSuccess(downloadUrl: String, file: File) {
+                // TODO 文件下载成功
+            }
+
+            override fun onDownloadFailed(downloadUrl: String, error: String?) {
+                showToast(getString(R.string.download_failed) + ": $error")
+                dismissLoading()
+            }
+        })
+}
 ```
 
 
