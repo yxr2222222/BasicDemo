@@ -37,5 +37,5 @@ android {
 
 dependencies {
     implementation project(path: ':base')
-//    implementation 'com.github.yxr2222222:BasicDemo:v1.0.3.202212071'
+//    implementation 'com.github.yxr2222222:BasicDemo:v1.3.2.202309281'
 }
