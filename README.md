@@ -66,7 +66,7 @@
 
    在项目根目录中加入添加
 
-   ```java
+   ```groovy
    // Top-level build file where you can add configuration options common to all sub-projects/modules.
    buildscript {
        dependencies {
@@ -100,7 +100,7 @@
 
    添加依赖
 
-   ```java
+   ```groovy
    implementation 'com.github.yxr2222222:BasicDemo:v1.3.2.202309281'
    ```
 
@@ -108,23 +108,23 @@
 
 #### Module的gradle完善
 
-```java
-apply plugin:'kotlin-android'
-        apply plugin:'kotlin-kapt'
+```groovy
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
-        android{
-        ...
-        buildFeatures{
+android {
+    ...
+    buildFeatures {
         viewBinding true
         dataBinding true
-        }
+    }
 
-        compileOptions{
+    compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-        }
-        ...
-        }
+    }
+    ...
+}
 
 ```
 
@@ -221,7 +221,7 @@ UpdateManager.instance.checkUpdate(
 )
 ```
 
-#### [文件下载]
+#### 文件下载
 
 ```kotlin
 private fun downloadFile(downloadUrl: String) {
