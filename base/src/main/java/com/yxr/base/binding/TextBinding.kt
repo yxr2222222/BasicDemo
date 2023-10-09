@@ -11,6 +11,14 @@ import pl.droidsonroids.gif.GifImageView
 
 class TextBinding {
     companion object {
+        @BindingAdapter(value = ["lineSpacing"], requireAll = false)
+        @JvmStatic
+        fun bindingLineSpacing(textView: TextView, lineSpacing: Int?) {
+            lineSpacing?.let {
+                textView.setLineSpacing(lineSpacing.toFloat(), 1f)
+            }
+        }
+
         @BindingAdapter(value = ["textChangedListener"], requireAll = false)
         @JvmStatic
         fun bindingTextChangedListener(textView: TextView, textChangedListener: TextWatcher?) {

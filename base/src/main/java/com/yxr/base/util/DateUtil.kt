@@ -47,7 +47,7 @@ class DateUtil {
          * @param timeMillis 毫秒级时间戳
          */
         @JvmStatic
-        fun getRelativeTimeSpanString(timeMillis: Long): String? {
+        fun getRelativeTimeSpanString(timeMillis: Long): String {
             try {
                 return DateUtils.getRelativeTimeSpanString(timeMillis).toString()
             } catch (e: Exception) {

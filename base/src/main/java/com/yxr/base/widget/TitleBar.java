@@ -258,8 +258,8 @@ public class TitleBar extends ViewGroup implements View.OnClickListener {
         LinearLayout.LayoutParams params;
         if (action instanceof ImageAction) {
             int imageHeight = mHeight - view.getPaddingTop() - view.getPaddingBottom();
-            int imageWidht = (int) (imageHeight * ((ImageAction) action).getRatio());
-            params = new LinearLayout.LayoutParams(imageWidht + view.getPaddingLeft() + view.getPaddingRight(), mHeight);
+            int imageWidth = (int) (imageHeight * ((ImageAction) action).getRatio());
+            params = new LinearLayout.LayoutParams(imageWidth + view.getPaddingLeft() + view.getPaddingRight(), mHeight);
         } else {
             params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
                     LayoutParams.MATCH_PARENT);
@@ -343,8 +343,7 @@ public class TitleBar extends ViewGroup implements View.OnClickListener {
     }
 
     public View getViewByAction(Action action) {
-        View view = findViewWithTag(action);
-        return view;
+        return findViewWithTag(action);
     }
 
     @Override
