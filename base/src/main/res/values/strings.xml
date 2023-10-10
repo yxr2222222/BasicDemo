@@ -24,4 +24,5 @@
     <string name="loading">加载中…</string>
     <string name="install_now">立即安装</string>
     <string name="downloading_percent_format">下载中(%s)</string>
+    <string name="download_failed">下载失败</string>
 </resources>

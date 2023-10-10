@@ -1,21 +1,46 @@
 package com.yxr.base.http.download
 
-import com.yxr.base.http.manager.HttpManager
 import com.yxr.base.updater.api.BaseUpdaterApi
 import com.yxr.base.util.FileUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
+import java.util.concurrent.TimeUnit
+
 
 class DownloadUtil {
     companion object {
+        private var retrofit: Retrofit? = null
+
+        private fun createRetrofit(): Retrofit {
+            if (retrofit == null) {
+                val builder = OkHttpClient().newBuilder()
+                    .connectTimeout(60, TimeUnit.SECONDS)
+                    .readTimeout(60, TimeUnit.SECONDS)
+                    .writeTimeout(60, TimeUnit.SECONDS)
+
+                retrofit = Retrofit.Builder()
+                    .baseUrl("http://www.baidu.com")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .client(builder.build())
+                    .build()
+            }
+
+            return retrofit!!
+        }
+
         @JvmStatic
         fun downloadFile(
             coroutineScope: CoroutineScope,
@@ -37,8 +62,8 @@ class DownloadUtil {
                 targetFile.delete()
             }
 
-            val job = HttpManager.get()
-                .createApi(BaseUpdaterApi::class.java)
+            val job = createRetrofit()
+                .create(BaseUpdaterApi::class.java)
                 .downloadApp(downloadUrl)
 
             listener?.onDownloadStart(downloadUrl, job)
@@ -48,14 +73,24 @@ class DownloadUtil {
                     call: Call<ResponseBody>,
                     response: Response<ResponseBody>
                 ) {
+                    val successful = response.isSuccessful
+                    if (!successful) {
+                        onFailure(call, java.lang.RuntimeException("Not successful!"))
+                        return
+                    }
+
                     val body = response.body()
                     if (body == null) {
                         onFailure(call, java.lang.RuntimeException("Body is empty!"))
                         return
                     }
                     coroutineScope.launch(Dispatchers.IO) {
-                        val byteStream = body.byteStream()
                         val contentLength = body.contentLength()
+                        if (contentLength == -1L) {
+                            onFailure(call, java.lang.RuntimeException("Content Length is -1!"))
+                            return@launch
+                        }
+                        val byteStream = body.byteStream()
                         var os: OutputStream? = null
                         var currLength = 0L
                         try {

@@ -159,5 +159,6 @@ abstract class BaseUpdaterVM(lifecycle: LifecycleOwner?) : BaseViewModel(lifecyc
      */
     protected open fun onDownloadFailed(error: String?) {
         updateBtnText.value = getString(R.string.update_now)
+        showToast(getString(R.string.download_failed) + ": $error")
     }
 }

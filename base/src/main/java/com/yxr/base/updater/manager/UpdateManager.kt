@@ -39,7 +39,7 @@ class UpdateManager private constructor() {
                 if (updateChecker == null) {
                     listener?.onFailed(response.message() ?: "获取应用更新信息失败")
                 } else {
-                    listener?.onSuccess(updateChecker) ?: run {
+                    if (listener == null || !listener.onSuccess(updateChecker)) {
                         BaseApplication.context.startSimpleActivity(
                             SimpleUpdaterActivity::class.java,
                             hashMapOf(BaseUpdaterActivity.EXTRA_UPDATE_CHECKER to updateChecker)
