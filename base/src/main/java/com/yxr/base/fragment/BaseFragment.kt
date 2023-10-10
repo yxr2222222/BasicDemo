@@ -38,6 +38,7 @@ abstract class BaseFragment<T : ViewDataBinding, VM : BaseViewModel> :
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        dataLoaded = false
         viewModel = createViewModel()
 
         rootView = initBinding(inflater)
@@ -61,6 +62,7 @@ abstract class BaseFragment<T : ViewDataBinding, VM : BaseViewModel> :
 
     override fun onDestroyView() {
         dismissLoadingDialog()
+        dataLoaded = false
         loadingDialog = null
         super.onDestroyView()
         binding.unbind()

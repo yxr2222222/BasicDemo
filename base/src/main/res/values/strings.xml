@@ -1,6 +1,4 @@
 <resources>
-    <string name="app_name">base</string>
-
     <string name="default_empty">目前没有内容</string>
     <string name="refresh">刷新</string>
     <string name="load_error_refresh_please">加载失败，试试刷新页面</string>

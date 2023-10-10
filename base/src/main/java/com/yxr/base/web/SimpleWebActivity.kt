@@ -19,11 +19,18 @@ open class SimpleWebActivity : BaseStatusActivity<ActivitySimpleWebBinding, Simp
     companion object {
         private const val EXTRA_WEB_URL = "EXTRA_WEB_URL"
         private const val EXTRA_TITLE = "EXTRA_TITLE"
+        private const val EXTRA_IS_NEED_TITLE_BAR = "EXTRA_IS_NEED_TITLE_BAR"
 
-        fun start(context: Context, webUrl: String, title: String? = null) {
+        fun start(
+            context: Context,
+            webUrl: String,
+            title: String? = null,
+            isNeedTitleBar: Boolean = true
+        ) {
             val intent = Intent(context, SimpleWebActivity::class.java)
             intent.putExtra(EXTRA_WEB_URL, webUrl)
             intent.putExtra(EXTRA_TITLE, title)
+            intent.putExtra(EXTRA_IS_NEED_TITLE_BAR, isNeedTitleBar)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(intent)
         }
@@ -44,8 +51,21 @@ open class SimpleWebActivity : BaseStatusActivity<ActivitySimpleWebBinding, Simp
         super.onBackPressed()
     }
 
+    override fun initListener() {
+        super.initListener()
+        viewModel.reloadOb.observe(this) {
+            if (it == true) {
+                binding.webView.reload()
+            }
+        }
+    }
+
     override fun initData() {
         super.initData()
+
+        if (!intent.getBooleanExtra(EXTRA_IS_NEED_TITLE_BAR, true)) {
+            titleBar().visibility = View.GONE
+        }
 
         // 初始化WebView
         initWebView()

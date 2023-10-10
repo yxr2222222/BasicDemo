@@ -14,6 +14,7 @@ class SimpleWebVM(lifecycle: LifecycleOwner?) : BaseStatusViewModel(lifecycle) {
     val webViewClient = MutableLiveData<WebViewClient>()
     val webChromeClient = MutableLiveData<WebChromeClient>()
     val schemeJump = MutableLiveData<String>()
+    val reloadOb = MutableLiveData<Boolean>()
 
     init {
         webViewClient.value = object : WebViewClient() {
@@ -40,7 +41,22 @@ class SimpleWebVM(lifecycle: LifecycleOwner?) : BaseStatusViewModel(lifecycle) {
                 }
                 return super.shouldInterceptRequest(view, url)
             }
+
+            override fun onReceivedError(
+                view: WebView?,
+                request: WebResourceRequest?,
+                error: WebResourceError?
+            ) {
+                launchWithMain {
+                    showError()
+                }
+            }
         }
+    }
+
+    override fun reloadData() {
+        super.reloadData()
+        reloadOb.value = true
     }
 
     private fun schemeMatch(url: String?): Boolean {

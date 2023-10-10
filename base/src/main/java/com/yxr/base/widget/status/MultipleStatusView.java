@@ -69,18 +69,6 @@ public class MultipleStatusView extends RelativeLayout {
         showContent();
     }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        try {
-            clear(mEmptyView, mLoadingView, mErrorView);
-            statusTagList.clear();
-            mOnRetryClickListener = null;
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
     /**
      * 获取当前状态
      */
