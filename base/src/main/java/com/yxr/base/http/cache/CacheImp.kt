@@ -25,7 +25,7 @@ import java.security.cert.CertificateException
 import java.security.cert.CertificateFactory
 import java.util.*
 
-class CacheImp(cacheConfig: CacheConfig) : Closeable, Flushable, ICache {
+class CacheImp(private val cacheConfig: CacheConfig) : Closeable, Flushable, ICache {
 
     private val cache = DiskLruCacheUtil.getDiskLruCache(
         FileSystem.SYSTEM,
@@ -92,6 +92,7 @@ class CacheImp(cacheConfig: CacheConfig) : Closeable, Flushable, ICache {
         cache.evictAll()
     }
 
+    override fun getConfig() = cacheConfig
 
     private fun abortQuietly(editor: DiskLruCache.Editor?) {
         try {

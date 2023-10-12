@@ -6,7 +6,7 @@
 
 1. 编译环境
 
-   ```java
+   ```groovy
    Gradle:       7.2
    Kotlin:       1.5.21
    JDK           11
@@ -14,7 +14,7 @@
 
 2. 内部包含引用
 
-   ```java
+   ```groovy
    api 'androidx.appcompat:appcompat:1.4.2'
    api 'com.google.android.material:material:1.6.1'
    api 'androidx.legacy:legacy-support-v4:1.0.0'
@@ -149,7 +149,13 @@ class MyApp : BaseApplication() {
             // 设置网络请求失败重试次数，默认0
             .retryNum(0)
             // 设置缓存，不需要可不设置
-            .cache(CacheConfig(PathUtil.getDir("/http-cache"), maxSize = 1024 * 1024 * 1024))
+            .cache(
+                CacheConfig(
+                    cls = BaseResponse::class.java,
+                    directory = PathUtil.getDir("/http-cache"),
+                    maxSize = 1024 * 1024 * 1024
+                )
+            )
             // 添加拦截器，不需要可不设置
             .addInterceptor { chain -> chain.proceed(chain.request()) }
             // 设置网络环境切换配置，不需要可不设置
@@ -256,6 +262,7 @@ private fun downloadFile(downloadUrl: String) {
 ```
 
 #### [K-V本地持久化](./app/src/main/java/com/yxr/basicdemo/config/MMKVConfig.kt)
+
 ```kotlin
 class MMKVConfig {
     companion object {

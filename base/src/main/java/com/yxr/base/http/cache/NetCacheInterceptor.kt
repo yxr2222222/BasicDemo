@@ -1,5 +1,8 @@
 package com.yxr.base.http.cache
 
+import com.google.gson.Gson
+import com.yxr.base.http.model.IResponse
+import com.yxr.base.util.FileUtil
 import okhttp3.Interceptor
 import okhttp3.Protocol
 import okhttp3.Request
@@ -15,9 +18,12 @@ import okio.Source
 import okio.buffer
 import java.io.IOException
 import java.net.HttpURLConnection
+import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets
 import java.util.concurrent.TimeUnit
 
 class NetCacheInterceptor(private val mCache: ICache) : Interceptor {
+    private val gson = Gson()
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val initialRequest = chain.request()
@@ -54,8 +60,36 @@ class NetCacheInterceptor(private val mCache: ICache) : Interceptor {
 
         try {
             val response = chain.proceed(newRequest)
-            if (response.isSuccessful) {
-                return cacheWritingResponse(mCache.putCache(strategy.cacheKey, response), response)
+            val body = response.body
+            if (response.isSuccessful && body != null) {
+
+                var fromJson: IResponse<*>? = null
+                var cloneBuffer: Buffer? = null
+                try {
+                    val source = body.source()
+                    // Buffer the entire body.
+                    source.request(Long.MAX_VALUE)
+
+                    val contentType = body.contentType()
+                    val charset: Charset =
+                        contentType?.charset(StandardCharsets.UTF_8) ?: StandardCharsets.UTF_8
+
+                    cloneBuffer = source.buffer.clone()
+                    val json = cloneBuffer.readString(charset)
+
+                    fromJson = gson.fromJson(json, mCache.getConfig().cls)
+                } catch (e: Throwable) {
+                    e.printStackTrace()
+                } finally {
+                    FileUtil.closeQuietly(cloneBuffer)
+                }
+
+                if (fromJson?.isSuccess() == true) {
+                    return cacheWritingResponse(
+                        mCache.putCache(strategy.cacheKey, response),
+                        response
+                    )
+                }
             }
             if (strategy.cacheMode == CacheMode.NETWORK_PUT_READ_CACHE) {
                 return redCache(strategy, newRequest) ?: response

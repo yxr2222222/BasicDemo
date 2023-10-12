@@ -18,4 +18,6 @@ interface ICache {
 
     @Throws(IOException::class)
     fun removeAll()
+
+    fun getConfig() : CacheConfig
 }

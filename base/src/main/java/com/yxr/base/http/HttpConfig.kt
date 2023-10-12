@@ -3,6 +3,7 @@ package com.yxr.base.http
 import android.annotation.SuppressLint
 import com.yxr.base.http.cache.CacheConfig
 import com.yxr.base.http.callback.IHttpConfigCallback
+import com.yxr.base.http.model.IResponse
 import okhttp3.Cache
 import okhttp3.Interceptor
 import java.security.SecureRandom

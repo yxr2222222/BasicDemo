@@ -78,7 +78,6 @@ class DownloadUtil {
                         onFailure(call, java.lang.RuntimeException("Not successful!"))
                         return
                     }
-
                     val body = response.body()
                     if (body == null) {
                         onFailure(call, java.lang.RuntimeException("Body is empty!"))
@@ -86,10 +85,6 @@ class DownloadUtil {
                     }
                     coroutineScope.launch(Dispatchers.IO) {
                         val contentLength = body.contentLength()
-                        if (contentLength == -1L) {
-                            onFailure(call, java.lang.RuntimeException("Content Length is -1!"))
-                            return@launch
-                        }
                         val byteStream = body.byteStream()
                         var os: OutputStream? = null
                         var currLength = 0L
