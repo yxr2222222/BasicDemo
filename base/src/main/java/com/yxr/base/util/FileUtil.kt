@@ -1,10 +1,12 @@
 package com.yxr.base.util
 
+import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.provider.MediaStore
 import com.yxr.base.util.PathUtil.Companion.getDir
 import com.yxr.base.util.PathUtil.Companion.getFilePath
 import java.io.*
@@ -94,6 +96,50 @@ class FileUtil {
             return isSuccess
         }
 
+        @JvmStatic
+        fun saveBitmapToGallery(context: Context, bitmap: Bitmap) {
+            val values = ContentValues()
+            values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+            val resolver = context.contentResolver
+            val externalUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+            val insertUri: Uri?
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // For Android 10 (Q) and above
+                values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+                values.put(MediaStore.Images.Media.IS_PENDING, 1)
+                insertUri = resolver.insert(externalUri, values)
+                if (insertUri != null) {
+                    try {
+                        val outputStream = resolver.openOutputStream(insertUri)
+                        if (outputStream != null) {
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                            outputStream.close()
+                        }
+                    } catch (e: Throwable) {
+                        e.printStackTrace()
+                    } finally {
+                        values.clear()
+                        values.put(MediaStore.Images.Media.IS_PENDING, 0)
+                        resolver.update(insertUri, values, null, null)
+                    }
+                }
+            } else {
+                // For versions before Android 10
+                insertUri = resolver.insert(externalUri, values)
+                if (insertUri != null) {
+                    try {
+                        val outputStream = resolver.openOutputStream(insertUri)
+                        if (outputStream != null) {
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                            outputStream.close()
+                        }
+                    } catch (e: Throwable) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+        }
         @JvmStatic
         fun saveBitmapToFile(path: String?, bitmap: Bitmap?, quality: Int): Boolean {
             if (bitmap == null || bitmap.isRecycled) {

@@ -1,5 +1,6 @@
 package com.yxr.base.util
 
+import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
@@ -9,6 +10,7 @@ import android.os.Build
 import android.text.TextUtils
 import androidx.core.content.FileProvider
 import com.yxr.base.BaseApplication
+import com.yxr.base.BasicClient
 import java.io.File
 
 class PackageUtil {
@@ -187,6 +189,22 @@ class PackageUtil {
                 }
             }
             return false
+        }
+
+        @JvmStatic
+        fun jumpWechatScan(){
+            try {
+                // 调用微信扫一扫
+                val intent = Intent()
+                intent.component =
+                    ComponentName("com.tencent.mm", "com.tencent.mm.ui.LauncherUI")
+                intent.putExtra("LauncherUI.From.Scaner.Shortcut", true)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                intent.action = "android.intent.action.VIEW"
+                BasicClient.instance.context.startActivity(intent)
+            } catch (e: Throwable) {
+                e.printStackTrace()
+            }
         }
 
         @JvmStatic

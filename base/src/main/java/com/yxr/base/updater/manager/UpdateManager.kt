@@ -35,14 +35,17 @@ class UpdateManager private constructor() {
                 call: Call<T>,
                 response: Response<T>
             ) {
-                val updateChecker = response.body()?.getData()
-                if (updateChecker == null) {
+                val body = response.body()
+                if (body == null) {
                     listener?.onFailed(response.message() ?: "获取应用更新信息失败")
                 } else {
-                    if (listener == null || !listener.onSuccess(updateChecker)) {
+                    val data = body.getData()
+                    if (data == null) {
+                        listener?.onFailed(body.error() ?: "获取应用更新信息失败")
+                    } else if (listener == null || !listener.onSuccess(data)) {
                         BaseApplication.context.startSimpleActivity(
                             SimpleUpdaterActivity::class.java,
-                            hashMapOf(BaseUpdaterActivity.EXTRA_UPDATE_CHECKER to updateChecker)
+                            hashMapOf(BaseUpdaterActivity.EXTRA_UPDATE_CHECKER to data)
                         )
                     }
                 }
