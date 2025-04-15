@@ -14,6 +14,7 @@ import com.yxr.base.util.ToastUtil
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -49,6 +50,7 @@ class HttpManager private constructor() {
 
     private val retrofitMap = HashMap<Int?, Retrofit>()
     private val apiClassMap = HashMap<String, Any>()
+    private val factory = GsonConverterFactory.create()
 
     /**
      * 初始化OkHttpClient,retrofit
@@ -61,25 +63,31 @@ class HttpManager private constructor() {
 
     fun <T : Any> createApi(
         cls: Class<T>,
-        dispatcher: Dispatcher? = null
+        dispatcher: Dispatcher? = null,
+        factory: Converter.Factory? = null,
     ): T {
-        val apiKey = cls.name + dispatcher.hashCode()
+        val f = factory ?: this.factory
+        val apiKey = cls.name + dispatcher.hashCode() + f.hashCode()
         var api = apiClassMap[apiKey]
         if (api == null) {
-            api = getRetrofit(dispatcher).create(cls)
+            api = getRetrofit(dispatcher, f).create(cls)
             apiClassMap[apiKey] = api
         }
         return api as T
     }
 
-    fun getRetrofit(dispatcher: Dispatcher? = null): Retrofit {
-        return retrofitMap[dispatcher?.hashCode()] ?: createRetrofit(dispatcher)
+    fun getRetrofit(
+        dispatcher: Dispatcher? = null,
+        factory: Converter.Factory,
+    ): Retrofit {
+        val retrofit = retrofitMap[dispatcher.hashCode() + factory.hashCode()]
+        return retrofit ?: createRetrofit(dispatcher, factory)
     }
 
     /**
      * 创建Retrofit
      */
-    private fun createRetrofit(dispatcher: Dispatcher?): Retrofit {
+    private fun createRetrofit(dispatcher: Dispatcher?, factory: Converter.Factory): Retrofit {
         val builder = OkHttpClient().newBuilder()
 
         // 设置调度器
@@ -131,10 +139,10 @@ class HttpManager private constructor() {
         val retrofit = Retrofit.Builder()
             .client(client)
             .baseUrl(httpConfig.baseUrl)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(factory)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
-        retrofitMap[dispatcher?.hashCode()] = retrofit
+        retrofitMap[dispatcher.hashCode() + factory.hashCode()] = retrofit
         return retrofit
     }
 

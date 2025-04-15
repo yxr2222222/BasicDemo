@@ -11,6 +11,8 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.isActive
 import okhttp3.Dispatcher
+import retrofit2.Converter
+import retrofit2.converter.gson.GsonConverterFactory
 
 class HttpHelper {
     private val mainScope = MainScope()
@@ -20,8 +22,9 @@ class HttpHelper {
      */
     fun <T : Any> createApi(
         cls: Class<T>,
-        dispatcher: Dispatcher? = null
-    ): T = HttpManager.get().createApi(cls, dispatcher)
+        dispatcher: Dispatcher? = null,
+        factory: Converter.Factory? = null,
+    ): T = HttpManager.get().createApi(cls, dispatcher, factory)
 
     /**
      * 快捷请求

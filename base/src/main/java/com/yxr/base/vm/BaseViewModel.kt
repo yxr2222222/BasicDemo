@@ -20,6 +20,8 @@ import kotlinx.coroutines.*
 import okhttp3.Dispatcher
 import okhttp3.ResponseBody
 import retrofit2.Call
+import retrofit2.Converter
+import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 
 /**
@@ -79,8 +81,9 @@ abstract class BaseViewModel(lifecycle: LifecycleOwner?) : AbsViewModel(lifecycl
      */
     open fun <T : Any> createApi(
         cls: Class<T>,
-        dispatcher: Dispatcher? = null
-    ): T = HttpManager.get().createApi(cls, dispatcher)
+        dispatcher: Dispatcher? = null,
+        factory: Converter.Factory? = null,
+    ): T = HttpManager.get().createApi(cls, dispatcher, factory)
 
     /**
      * 快捷请求
@@ -93,6 +96,77 @@ abstract class BaseViewModel(lifecycle: LifecycleOwner?) : AbsViewModel(lifecycl
      */
     open fun <T> launchRequest(
         block: suspend () -> IResponse<T>?,
+        onSuccess: (T?) -> Unit,
+        onError: (exception: NetworkException) -> Unit = {},
+        isNeedLoading: Boolean = true,
+        loadingText: String? = null,
+        isShowError: Boolean = false,
+        isShowErrorDetail: Boolean = false,
+    ) {
+        var isErrorCallback = false
+        launchReq(
+            block = block,
+            onSuccess = { data ->
+                if (data == null) {
+                    val error =
+                        NetworkExceptionUtil.getMessage(R.string.default_null_body_exception)
+                    if (isShowError || isShowErrorDetail) {
+                        showToast(error)
+                    }
+                    if (!isErrorCallback) {
+                        isErrorCallback = true
+                        onError(CstServiceException(HttpErrorCode.CODE_NULL_DATA, error))
+                    }
+                } else if (!data.isSuccess()) {
+                    val error = data.error()
+                        ?: NetworkExceptionUtil.getMessage(R.string.default_null_body_exception)
+                    if (isShowError || isShowErrorDetail) {
+                        showToast(error)
+                    }
+                    if (!isErrorCallback) {
+                        isErrorCallback = true
+                        onError(
+                            CstServiceException(
+                                data.code() ?: HttpErrorCode.CODE_UNKNOWN,
+                                error
+                            )
+                        )
+                    }
+
+                    val httpConfig = HttpManager.get().httpConfig
+                    httpConfig.globalErrorCodeList.forEach { code ->
+                        if (data.code() == code) {
+                            httpConfig.configCallback?.onGlobalError(code)
+                        }
+                    }
+                } else {
+                    onSuccess(data.getData())
+                }
+            },
+            onError = { error ->
+                if (!isErrorCallback) {
+                    isErrorCallback = true
+                    onError(error)
+                }
+            },
+            isNeedLoading = isNeedLoading,
+            loadingText = loadingText,
+            isShowError = isShowError,
+            isShowErrorDetail = isShowErrorDetail,
+        )
+    }
+
+    /**
+     * 快捷请求
+     * @param block 需要进行的挂起方法（一般为网络请求之类的）
+     * @param onSuccess block方法处理成功回调
+     * @param onError block方法处理失败回调
+     * @param isNeedLoading 是否需要展示loading弹框
+     * @param isShowError 是否在失败时自动展示toast简要信息
+     * @param isShowErrorDetail 失败时toast的是否为详细信息
+     */
+    open fun <T> launchReq(
+        block: suspend () -> T?,
         onSuccess: (T?) -> Unit,
         onError: suspend (exception: NetworkException) -> Unit = {},
         isNeedLoading: Boolean = true,
@@ -108,35 +182,8 @@ abstract class BaseViewModel(lifecycle: LifecycleOwner?) : AbsViewModel(lifecycl
             if (isNeedLoading) {
                 dismissLoading()
             }
-            if (data == null) {
-                val error = NetworkExceptionUtil.getMessage(R.string.default_null_body_exception)
-                if (isShowError || isShowErrorDetail) {
-                    showToast(error)
-                }
-                if (!isErrorCallback) {
-                    isErrorCallback = true
-                    onError(CstServiceException(HttpErrorCode.CODE_NULL_DATA, error))
-                }
-            } else if (!data.isSuccess()) {
-                val error = data.error()
-                    ?: NetworkExceptionUtil.getMessage(R.string.default_null_body_exception)
-                if (isShowError || isShowErrorDetail) {
-                    showToast(error)
-                }
-                if (!isErrorCallback) {
-                    isErrorCallback = true
-                    onError(CstServiceException(data.code() ?: HttpErrorCode.CODE_UNKNOWN, error))
-                }
 
-                val httpConfig = HttpManager.get().httpConfig
-                httpConfig.globalErrorCodeList.forEach { code ->
-                    if (data.code() == code) {
-                        httpConfig.configCallback?.onGlobalError(code)
-                    }
-                }
-            } else {
-                onSuccess(data.getData())
-            }
+            onSuccess(data)
         }, onError = { exception ->
             if (isNeedLoading) {
                 dismissLoading()
